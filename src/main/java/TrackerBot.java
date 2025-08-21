@@ -43,14 +43,18 @@ public class TrackerBot {
             //to parse input of task additions
             if (userInput.startsWith("todo ")) {
                 String taskDescription = userInput.substring("todo ".length());
+
                 taskTarget = new ToDos(taskDescription);
                 userInput = "addTask";
             }
 
             if (userInput.startsWith("deadline ")) {
                 int deadlineIndex = userInput.indexOf("/by ");
-                String taskDescription = userInput.substring("deadline ".length(), deadlineIndex);
+
+                //-1 to account for space between description and /by
+                String taskDescription = userInput.substring("deadline ".length(), deadlineIndex - 1);
                 String deadline = userInput.substring(deadlineIndex + "/by ".length());
+
                 taskTarget = new Deadlines(taskDescription, deadline);
                 userInput = "addTask";
             }
@@ -58,10 +62,14 @@ public class TrackerBot {
             if (userInput.startsWith("event ")) {
                 int startDateIndex = userInput.indexOf("/from ");
                 int endDateIndex = userInput.indexOf("/to ");
-                String taskDescription = userInput.substring("event ".length(), startDateIndex);
+
+                //-1 to account for space between description and /from
+                String taskDescription = userInput.substring("event ".length(), startDateIndex - 1);
+
                 // -1 for proper spacing between /from [start] /to [end]
                 String startDate = userInput.substring(startDateIndex + "/from ".length(), endDateIndex - 1);
                 String endDate = userInput.substring(endDateIndex + "/to ".length());
+
                 taskTarget = new Events(taskDescription, startDate, endDate);
                 userInput = "addTask";
             }

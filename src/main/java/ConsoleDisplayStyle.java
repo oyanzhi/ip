@@ -45,10 +45,11 @@ public final class ConsoleDisplayStyle {
 
         case "unmark":
             System.out.println("OK, I've marked this task as not done yet:");
+            break;
 
         case "addTask":
             System.out.println("Got it. I've added this task:");
-
+            break;
         }
         //print task specific text
         ConsoleDisplayStyle.printIndentation(spacing + 2);
