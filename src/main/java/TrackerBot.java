@@ -26,6 +26,7 @@ public class TrackerBot {
             int taskIndex = -1;
             int inputLength = userInput.length();
             maxInputLength = Math.max(inputLength, maxInputLength);
+            Task taskTarget = null;
 
 
             //to parse input of mark and unmark
@@ -37,6 +38,32 @@ public class TrackerBot {
             if (userInput.startsWith("unmark ")) {
                 taskIndex = Integer.parseInt(userInput.substring("unmark ".length())) - 1;
                 userInput = "unmark";
+            }
+
+            //to parse input of task additions
+            if (userInput.startsWith("todo ")) {
+                String taskDescription = userInput.substring("todo ".length());
+                taskTarget = new ToDos(taskDescription);
+                userInput = "addTask";
+            }
+
+            if (userInput.startsWith("deadline ")) {
+                int deadlineIndex = userInput.indexOf("/by ");
+                String taskDescription = userInput.substring("deadline ".length(), deadlineIndex);
+                String deadline = userInput.substring(deadlineIndex + "/by ".length());
+                taskTarget = new Deadlines(taskDescription, deadline);
+                userInput = "addTask";
+            }
+
+            if (userInput.startsWith("event ")) {
+                int startDateIndex = userInput.indexOf("/from ");
+                int endDateIndex = userInput.indexOf("/to ");
+                String taskDescription = userInput.substring("event ".length(), startDateIndex);
+                // -1 for proper spacing between /from [start] /to [end]
+                String startDate = userInput.substring(startDateIndex + "/from ".length(), endDateIndex - 1);
+                String endDate = userInput.substring(endDateIndex + "/to ".length());
+                taskTarget = new Events(taskDescription, startDate, endDate);
+                userInput = "addTask";
             }
 
 
@@ -54,6 +81,8 @@ public class TrackerBot {
                     ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultEmptyListText);
                 } else { //Texts Stored
                     ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 7); //7 to style
+                    ConsoleDisplayStyle.printIndentation(inputLength);
+                    System.out.printf("Here are the [%d] tasks in your list:\n", tasks.size());
                     for (int i = 0; i < tasks.size(); i++) { //Non-Empty Texts Stored
                         ConsoleDisplayStyle.printIndentation(inputLength);
                         String oneRow = String.format("%d. %s", i + 1, tasks.get(i));
@@ -65,32 +94,44 @@ public class TrackerBot {
 
             case "mark":
                 //set task to done
-                Task taskToMarkDone = tasks.get(taskIndex);
-                taskToMarkDone.markAsDone();
+                taskTarget = tasks.get(taskIndex);
+                taskTarget.markAsDone();
 
                 //print text
-                ConsoleDisplayStyle.printMarkingStyling(true,
+                ConsoleDisplayStyle.printCommandStyling(userInput,
                         inputLength,
                         maxInputLength + 7,
-                        taskToMarkDone);
+                        taskTarget);
 
                 break;
 
             case "unmark":
                 //set task to undone
-                Task taskToMarkUndone = tasks.get(taskIndex);
-                taskToMarkUndone.markAsUndone();
+                taskTarget = tasks.get(taskIndex);
+                taskTarget.markAsUndone();
 
-                ConsoleDisplayStyle.printMarkingStyling(false,
+                ConsoleDisplayStyle.printCommandStyling(userInput,
                         inputLength,
                         maxInputLength + 7,
-                        taskToMarkUndone);
+                        taskTarget);
 
                 break;
 
+            case "addTask":
+                tasks.add(taskTarget);
+
+                ConsoleDisplayStyle.printCommandStyling(userInput,
+                        inputLength,
+                        maxInputLength + 7,
+                        taskTarget);
+
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.printf("Now you have %d tasks in the list.%n", tasks.size());
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
+                break;
+
             default:
-                tasks.add(new Task(userInput));
-                String defaultAddToStorageText = "added: " + userInput;
+                String defaultAddToStorageText = "Missing Command!";
 
                 //7 for styling
                 ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, defaultAddToStorageText);

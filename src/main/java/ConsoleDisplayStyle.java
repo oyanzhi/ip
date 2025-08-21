@@ -33,20 +33,27 @@ public final class ConsoleDisplayStyle {
         printHorizontalLine(spacing, length);
     }
 
-    public static void printMarkingStyling(boolean isMarkDone, int spacing, int length, Task task) {
+    public static void printCommandStyling(String criteria, int spacing, int length, Task task) {
         //print default text
         ConsoleDisplayStyle.printHorizontalLine(spacing, length); //7 to style
         ConsoleDisplayStyle.printIndentation(spacing);
-        if (isMarkDone) {
-            System.out.println("Nice! I've marked this task as done:");
-        } else {
-            System.out.println("OK, I've marked this task as not done yet:");
-        }
 
+        switch (criteria) {
+        case "mark":
+            System.out.println("Nice! I've marked this task as done:");
+            break;
+
+        case "unmark":
+            System.out.println("OK, I've marked this task as not done yet:");
+
+        case "addTask":
+            System.out.println("Got it. I've added this task:");
+
+        }
         //print task specific text
         ConsoleDisplayStyle.printIndentation(spacing + 2);
         System.out.println(task);
-        ConsoleDisplayStyle.printHorizontalLine(spacing, length); //7 to style
+        ConsoleDisplayStyle.printHorizontalLine(spacing, length);
     }
 
 
