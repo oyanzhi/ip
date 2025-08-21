@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TrackerBot {
-    static ArrayList<String> texts = new ArrayList<>();
+    static ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
         String name = "TrackerBot";
@@ -17,49 +17,86 @@ public class TrackerBot {
         ConsoleDisplayStyle.printHorizontalLine(0, 0);
 
         //Echo
-        String toExit = "bye";
-        String toDisplay = "list";
-        String addStyling = "added: ";
-        int addStylingLength = addStyling.length();
-
         Scanner inputScanner = new Scanner(System.in);
-
         int maxInputLength = 0;
+        boolean exitLoop = false;
 
-        while (inputScanner.hasNextLine()) {
+        while (!exitLoop && inputScanner.hasNextLine()) {
             String userInput = inputScanner.nextLine();
+            int taskIndex = -1;
             int inputLength = userInput.length();
-
             maxInputLength = Math.max(inputLength, maxInputLength);
 
 
+            //to parse input of mark and unmark
+            if (userInput.startsWith("mark ")) {
+                taskIndex = Integer.parseInt(userInput.substring("mark ".length())) - 1;
+                userInput = "mark";
+            }
+
+            if (userInput.startsWith("unmark ")) {
+                taskIndex = Integer.parseInt(userInput.substring("unmark ".length())) - 1;
+                userInput = "unmark";
+            }
+
+
             //Bot Replies Instead of Echo
-            
-            //Exit Check
-            if (userInput.equals(toExit)) { //Exiting
+            switch (userInput) {
+            case "bye":
+                exitLoop = true;
                 String defaultExitText = "Bye. Hope to see you again soon!";
                 ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultExitText);
                 break;
-            } else if (userInput.equals(toDisplay)) { //Display Stored Texts
-                if (texts.isEmpty()) { //No Texts Stored
+
+            case "list":
+                if (tasks.isEmpty()) { //No Texts Stored
                     String defaultEmptyListText = "Empty List!";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultEmptyListText);
                 } else { //Texts Stored
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 3); //3 for styling
-                    for (int i = 0; i < texts.size(); i++) { //Non-Empty Texts Stored
+                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 7); //7 to style
+                    for (int i = 0; i < tasks.size(); i++) { //Non-Empty Texts Stored
                         ConsoleDisplayStyle.printIndentation(inputLength);
-                        String oneRow = String.format("%d. %s", i + 1, texts.get(i));
+                        String oneRow = String.format("%d. %s", i + 1, tasks.get(i));
                         System.out.println(oneRow);
                     }
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 3); //3 for styling
+                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 7); //7 to style
                 }
-            } else { //Not Exiting + Storing Text
-                texts.add(userInput);
-                String defaultAddedToStorageText = "added: " + userInput;
+                break;
+
+            case "mark":
+                //set task to done
+                Task taskToMarkDone = tasks.get(taskIndex);
+                taskToMarkDone.markAsDone();
+
+                //print text
+                ConsoleDisplayStyle.printMarkingStyling(true,
+                        inputLength,
+                        maxInputLength + 7,
+                        taskToMarkDone);
+
+                break;
+
+            case "unmark":
+                //set task to undone
+                Task taskToMarkUndone = tasks.get(taskIndex);
+                taskToMarkUndone.markAsUndone();
+
+                ConsoleDisplayStyle.printMarkingStyling(false,
+                        inputLength,
+                        maxInputLength + 7,
+                        taskToMarkUndone);
+
+                break;
+
+            default:
+                tasks.add(new Task(userInput));
+                String defaultAddToStorageText = "added: " + userInput;
 
                 //7 for styling
-                ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, defaultAddedToStorageText);
+                ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, defaultAddToStorageText);
+                break;
             }
+
         }
 
     }
