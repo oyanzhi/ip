@@ -5,6 +5,16 @@ import java.util.Scanner;
 public class TrackerBot {
     static ArrayList<Task> tasks = new ArrayList<>();
 
+    enum Commands {
+        MARK,
+        UNMARK,
+        DELETE,
+        ADDTASK,
+        BYE,
+        LIST,
+        DEFAULT
+    }
+
     public static void main(String[] args) {
         String name = "TrackerBot";
 
@@ -28,6 +38,16 @@ public class TrackerBot {
             maxInputLength = Math.max(inputLength, maxInputLength);
             Task taskTarget = null;
 
+            Commands userCommand = Commands.DEFAULT;
+
+            //to parse utility inputs
+            if (userInput.startsWith("list")) {
+                userCommand = Commands.LIST;
+            }
+
+            if (userInput.startsWith("bye")) {
+                userCommand = Commands.BYE;
+            }
 
             //to parse input of mark
             if (userInput.startsWith("mark")) {
@@ -39,7 +59,7 @@ public class TrackerBot {
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
                         throw new TrackerBotException("Invalid Task Index");
                     }
-                    userInput = "mark";
+                    userCommand = Commands.MARK;
                 } catch (NumberFormatException e) {
                     String message = "Missing Task Index. Example usage 'mark 1'";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
@@ -60,7 +80,7 @@ public class TrackerBot {
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
                         throw new TrackerBotException("Invalid Task Index");
                     }
-                    userInput = "unmark";
+                    userCommand = Commands.UNMARK;
                 } catch (NumberFormatException e) {
                     String message = "Missing Task Index. Example usage 'unmark 1'";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
@@ -81,7 +101,7 @@ public class TrackerBot {
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
                         throw new TrackerBotException("Invalid Task Index");
                     }
-                    userInput = "delete";
+                    userCommand = Commands.DELETE;
                 } catch (NumberFormatException e) {
                     String message = "Missing Task Index. Example usage 'delete 1'";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
@@ -103,7 +123,7 @@ public class TrackerBot {
                         throw new TrackerBotException("Missing Description. Example usage 'todo tasking'");
                     }
                     taskTarget = new ToDos(taskDescription);
-                    userInput = "addTask";
+                    userCommand = Commands.ADDTASK;
                 } catch (TrackerBotException e) {
                     ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
                     continue;
@@ -125,7 +145,7 @@ public class TrackerBot {
                     String deadline = userInput.substring(deadlineIndex + "/by ".length());
 
                     taskTarget = new Deadlines(taskDescription, deadline);
-                    userInput = "addTask";
+                    userCommand = Commands.ADDTASK;
                 } catch (TrackerBotException e) {
                     ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
                     continue;
@@ -153,7 +173,7 @@ public class TrackerBot {
                     String endDate = userInput.substring(endDateIndex + "/to ".length());
 
                     taskTarget = new Events(taskDescription, startDate, endDate);
-                    userInput = "addTask";
+                    userCommand = Commands.ADDTASK;
                 } catch (TrackerBotException e) {
                     ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
                     continue;
@@ -163,14 +183,14 @@ public class TrackerBot {
 
             //Bot Replies Instead of Echo
             int stylingIndex = 7;
-            switch (userInput) {
-            case "bye":
+            switch (userCommand) {
+            case BYE:
                 exitLoop = true;
                 String defaultExitText = "Bye. Hope to see you again soon!";
                 ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultExitText);
                 break;
 
-            case "list":
+            case LIST:
                 if (tasks.isEmpty()) { //No Texts Stored
                     String defaultEmptyListText = "Empty List!";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultEmptyListText);
@@ -187,36 +207,36 @@ public class TrackerBot {
                 }
                 break;
 
-            case "mark":
+            case MARK:
                 //set task to done
                 taskTarget = tasks.get(taskIndex);
                 taskTarget.markAsDone();
 
                 //print text
-                ConsoleDisplayStyle.printCommandStyling(userInput,
+                ConsoleDisplayStyle.printCommandStyling("mark",
                         inputLength,
                         maxInputLength + stylingIndex,
                         taskTarget);
 
                 break;
 
-            case "unmark":
+            case UNMARK:
                 //set task to undone
                 taskTarget = tasks.get(taskIndex);
                 taskTarget.markAsUndone();
 
-                ConsoleDisplayStyle.printCommandStyling(userInput,
+                ConsoleDisplayStyle.printCommandStyling("unmark",
                         inputLength,
                         maxInputLength + stylingIndex,
                         taskTarget);
 
                 break;
 
-            case "delete":
+            case DELETE:
                 taskTarget = tasks.get(taskIndex);
                 tasks.remove(taskTarget);
 
-                ConsoleDisplayStyle.printCommandStyling(userInput,
+                ConsoleDisplayStyle.printCommandStyling("delete",
                         inputLength,
                         maxInputLength + stylingIndex,
                         taskTarget);
@@ -226,10 +246,10 @@ public class TrackerBot {
                 ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength);
                 break;
 
-            case "addTask":
+            case ADDTASK:
                 tasks.add(taskTarget);
 
-                ConsoleDisplayStyle.printCommandStyling(userInput,
+                ConsoleDisplayStyle.printCommandStyling("addTask",
                         inputLength,
                         maxInputLength + stylingIndex,
                         taskTarget);
@@ -239,11 +259,20 @@ public class TrackerBot {
                 ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
                 break;
 
-            default:
+            case DEFAULT:
                 String missingText = "Missing Command!";
 
                 //stylingIndex for styling
                 ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + stylingIndex, missingText);
+
+                //show possible commands
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.println("Possible Commands:");
+                for (Commands c : Commands.values()) {
+                    ConsoleDisplayStyle.printIndentation(inputLength);
+                    System.out.println(c);
+                }
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
                 break;
             }
 
