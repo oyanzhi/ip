@@ -47,6 +47,10 @@ public final class ConsoleDisplayStyle {
             System.out.println("OK, I've marked this task as not done yet:");
             break;
 
+        case "delete":
+            System.out.println("OK, I've removed this task:");
+            break;
+
         case "addTask":
             System.out.println("Got it. I've added this task:");
             break;

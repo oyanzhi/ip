@@ -71,6 +71,27 @@ public class TrackerBot {
                 }
             }
 
+            //to parse input for deleting
+            if (userInput.startsWith("delete")) {
+                try {
+                    if ("delete".length() + 1 > userInput.length()) {
+                        throw new TrackerBotException("Missing Arguments! Example usage 'delete 1'");
+                    }
+                    taskIndex = Integer.parseInt(userInput.substring("delete".length() + 1)) - 1;
+                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                        throw new TrackerBotException("Invalid Task Index");
+                    }
+                    userInput = "delete";
+                } catch (NumberFormatException e) {
+                    String message = "Missing Task Index. Example usage 'delete 1'";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
+                    continue;
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
+            }
+
             //to parse input of task additions
             if (userInput.startsWith("todo")) {
                 try {
@@ -94,7 +115,8 @@ public class TrackerBot {
             if (userInput.startsWith("deadline")) {
                 try {
                     int deadlineIndex = userInput.indexOf("/by ");
-                    if ("deadline".length() + 1 > userInput.length() || deadlineIndex <= 9) {
+                    if ("deadline".length() + 1 > userInput.length() || deadlineIndex <= 9
+                            || userInput.charAt(deadlineIndex - 1) != ' ') {
                         throw new TrackerBotException("Missing Arguments! Example usage 'deadline tasking /by date'");
                     }
 
@@ -116,7 +138,9 @@ public class TrackerBot {
                     int startDateIndex = userInput.indexOf("/from ");
                     int endDateIndex = userInput.indexOf("/to ");
 
-                    if ("event".length() + 1 > userInput.length() || startDateIndex <= 7 || endDateIndex <= 15) {
+                    if (("event".length() + 1) > userInput.length() || startDateIndex <= 7 || endDateIndex <= 15
+                            || userInput.charAt(startDateIndex - 1) != ' '
+                            || userInput.charAt(endDateIndex - 1) != ' ') {
                         throw new TrackerBotException("Missing Arguments! " +
                                 "Example usage 'event tasking /from startDate /to endDate");
                     }
@@ -138,6 +162,7 @@ public class TrackerBot {
 
 
             //Bot Replies Instead of Echo
+            int stylingIndex = 7;
             switch (userInput) {
             case "bye":
                 exitLoop = true;
@@ -150,7 +175,7 @@ public class TrackerBot {
                     String defaultEmptyListText = "Empty List!";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultEmptyListText);
                 } else { //Texts Stored
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 7); //7 to style
+                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
                     ConsoleDisplayStyle.printIndentation(inputLength);
                     System.out.printf("Here are the [%d] tasks in your list:\n", tasks.size());
                     for (int i = 0; i < tasks.size(); i++) { //Non-Empty Texts Stored
@@ -158,7 +183,7 @@ public class TrackerBot {
                         String oneRow = String.format("%d. %s", i + 1, tasks.get(i));
                         System.out.println(oneRow);
                     }
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + 7); //7 to style
+                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
                 }
                 break;
 
@@ -170,7 +195,7 @@ public class TrackerBot {
                 //print text
                 ConsoleDisplayStyle.printCommandStyling(userInput,
                         inputLength,
-                        maxInputLength + 7,
+                        maxInputLength + stylingIndex,
                         taskTarget);
 
                 break;
@@ -182,9 +207,23 @@ public class TrackerBot {
 
                 ConsoleDisplayStyle.printCommandStyling(userInput,
                         inputLength,
-                        maxInputLength + 7,
+                        maxInputLength + stylingIndex,
                         taskTarget);
 
+                break;
+
+            case "delete":
+                taskTarget = tasks.get(taskIndex);
+                tasks.remove(taskTarget);
+
+                ConsoleDisplayStyle.printCommandStyling(userInput,
+                        inputLength,
+                        maxInputLength + stylingIndex,
+                        taskTarget);
+
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.printf("Now you have %d tasks in the list.%n", tasks.size());
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength);
                 break;
 
             case "addTask":
@@ -192,19 +231,19 @@ public class TrackerBot {
 
                 ConsoleDisplayStyle.printCommandStyling(userInput,
                         inputLength,
-                        maxInputLength + 7,
+                        maxInputLength + stylingIndex,
                         taskTarget);
 
                 ConsoleDisplayStyle.printIndentation(inputLength);
                 System.out.printf("Now you have %d tasks in the list.%n", tasks.size());
-                ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
                 break;
 
             default:
-                String defaultAddToStorageText = "Missing Command!";
+                String missingText = "Missing Command!";
 
-                //7 for styling
-                ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, defaultAddToStorageText);
+                //stylingIndex for styling
+                ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + stylingIndex, missingText);
                 break;
             }
 
