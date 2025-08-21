@@ -29,49 +29,111 @@ public class TrackerBot {
             Task taskTarget = null;
 
 
-            //to parse input of mark and unmark
-            if (userInput.startsWith("mark ")) {
-                taskIndex = Integer.parseInt(userInput.substring("mark ".length())) - 1;
-                userInput = "mark";
+            //to parse input of mark
+            if (userInput.startsWith("mark")) {
+                try {
+                    if ("mark".length() + 1 > userInput.length()) {
+                        throw new TrackerBotException("Missing Arguments! Example usage 'mark 1'");
+                    }
+                    taskIndex = Integer.parseInt(userInput.substring("mark".length() + 1)) - 1;
+                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                        throw new TrackerBotException("Invalid Task Index");
+                    }
+                    userInput = "mark";
+                } catch (NumberFormatException e) {
+                    String message = "Missing Task Index. Example usage 'mark 1'";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
+                    continue;
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
             }
 
-            if (userInput.startsWith("unmark ")) {
-                taskIndex = Integer.parseInt(userInput.substring("unmark ".length())) - 1;
-                userInput = "unmark";
+            //to parse input of unmark
+            if (userInput.startsWith("unmark")) {
+                try {
+                    if ("unmark".length() + 1 > userInput.length()) {
+                        throw new TrackerBotException("Missing Arguments! Example usage 'unmark 1'");
+                    }
+                    taskIndex = Integer.parseInt(userInput.substring("unmark".length() + 1)) - 1;
+                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                        throw new TrackerBotException("Invalid Task Index");
+                    }
+                    userInput = "unmark";
+                } catch (NumberFormatException e) {
+                    String message = "Missing Task Index. Example usage 'unmark 1'";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
+                    continue;
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
             }
 
             //to parse input of task additions
-            if (userInput.startsWith("todo ")) {
-                String taskDescription = userInput.substring("todo ".length());
+            if (userInput.startsWith("todo")) {
+                try {
+                    if ("todo".length() + 1 > userInput.length()) {
+                        throw new TrackerBotException("Missing Arguments! Example usage 'todo tasking'");
+                    }
+                    String taskDescription = userInput.substring("todo ".length());
+                    if (taskDescription.equals("")) {
+                        throw new TrackerBotException("Missing Description. Example usage 'todo tasking'");
+                    }
+                    taskTarget = new ToDos(taskDescription);
+                    userInput = "addTask";
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
 
-                taskTarget = new ToDos(taskDescription);
-                userInput = "addTask";
+
             }
 
-            if (userInput.startsWith("deadline ")) {
-                int deadlineIndex = userInput.indexOf("/by ");
+            if (userInput.startsWith("deadline")) {
+                try {
+                    int deadlineIndex = userInput.indexOf("/by ");
+                    if ("deadline".length() + 1 > userInput.length() || deadlineIndex <= 9) {
+                        throw new TrackerBotException("Missing Arguments! Example usage 'deadline tasking /by date'");
+                    }
 
-                //-1 to account for space between description and /by
-                String taskDescription = userInput.substring("deadline ".length(), deadlineIndex - 1);
-                String deadline = userInput.substring(deadlineIndex + "/by ".length());
+                    //-1 to account for space between description and /by
+                    String taskDescription = userInput.substring("deadline".length() + 1, deadlineIndex - 1);
+                    String deadline = userInput.substring(deadlineIndex + "/by ".length());
 
-                taskTarget = new Deadlines(taskDescription, deadline);
-                userInput = "addTask";
+                    taskTarget = new Deadlines(taskDescription, deadline);
+                    userInput = "addTask";
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
+
             }
 
-            if (userInput.startsWith("event ")) {
-                int startDateIndex = userInput.indexOf("/from ");
-                int endDateIndex = userInput.indexOf("/to ");
+            if (userInput.startsWith("event")) {
+                try {
+                    int startDateIndex = userInput.indexOf("/from ");
+                    int endDateIndex = userInput.indexOf("/to ");
 
-                //-1 to account for space between description and /from
-                String taskDescription = userInput.substring("event ".length(), startDateIndex - 1);
+                    if ("event".length() + 1 > userInput.length() || startDateIndex <= 7 || endDateIndex <= 15) {
+                        throw new TrackerBotException("Missing Arguments! " +
+                                "Example usage 'event tasking /from startDate /to endDate");
+                    }
 
-                // -1 for proper spacing between /from [start] /to [end]
-                String startDate = userInput.substring(startDateIndex + "/from ".length(), endDateIndex - 1);
-                String endDate = userInput.substring(endDateIndex + "/to ".length());
+                    //-1 to account for space between description and /from
+                    String taskDescription = userInput.substring("event".length() + 1, startDateIndex - 1);
 
-                taskTarget = new Events(taskDescription, startDate, endDate);
-                userInput = "addTask";
+                    // -1 for proper spacing between /from [start] /to [end]
+                    String startDate = userInput.substring(startDateIndex + "/from ".length(), endDateIndex - 1);
+                    String endDate = userInput.substring(endDateIndex + "/to ".length());
+
+                    taskTarget = new Events(taskDescription, startDate, endDate);
+                    userInput = "addTask";
+                } catch (TrackerBotException e) {
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, e.getMessage().length(), e.getMessage());
+                    continue;
+                }
             }
 
 
