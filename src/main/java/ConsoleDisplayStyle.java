@@ -33,6 +33,14 @@ public final class ConsoleDisplayStyle {
         printHorizontalLine(spacing, length);
     }
 
+    public static void printTaskStyling( //for printing from storage - unused at this stage
+            int indentation, int maxInputLength, int index, String type, String isCompleted, String taskDescription) {
+        ConsoleDisplayStyle.printIndentation(indentation);
+        String oneRow = String.format("%d.[%s][%s] %s", index, type, isCompleted, taskDescription);
+        System.out.println(oneRow);
+        ConsoleDisplayStyle.printHorizontalLine(indentation, maxInputLength);
+    }
+
     public static void printCommandStyling(String criteria, int spacing, int length, Task task) {
         //print default text
         ConsoleDisplayStyle.printHorizontalLine(spacing, length); //7 to style

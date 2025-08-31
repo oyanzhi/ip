@@ -1,4 +1,9 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.Math;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,6 +23,45 @@ public class TrackerBot {
     public static void main(String[] args) {
         String name = "TrackerBot";
 
+        //Set-Up Stored File Path
+        String currDir = System.getProperty("user.dir");
+
+        //to create parent directories
+        Path dataFolderDir = Paths.get(currDir, "data");
+        try {
+            Files.createDirectories(dataFolderDir);
+        } catch (IOException e) {
+            System.out.println("Could Not Create Data Folder. Please Try Again.");
+            return;
+        }
+
+        //actual storage file
+        Path p = Paths.get(dataFolderDir.toString(), "task_data");
+        FileIO f = null;
+        try {
+            boolean fileExists = Files.exists(p);
+            if (!fileExists) {
+                throw new FileNotFoundException();
+            }
+            f = new FileIO(p.toFile());
+            tasks = f.readFileContents();
+        } catch (FileNotFoundException e) {
+            //lets user know missing file - to create one
+            System.out.println(e.getMessage() + "\n" + "Missing Storage File. Creating a Storage File Now...");
+            try {
+                Files.createFile(p);
+            } catch (IOException ex) {
+                System.out.println("Cannot Create File. Please try again.");
+                return;
+            } finally {
+                f = new FileIO(p.toFile());
+            }
+        } catch (TrackerBotException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+
         //Initial Greeting
         ConsoleDisplayStyle.printHorizontalLine(0, 0);
         System.out.println("Hello! I'm "
@@ -26,7 +70,8 @@ public class TrackerBot {
                 + "What can I do for you?");
         ConsoleDisplayStyle.printHorizontalLine(0, 0);
 
-        //Echo
+
+        //Bot Response
         Scanner inputScanner = new Scanner(System.in);
         int maxInputLength = 0;
         boolean exitLoop = false;
@@ -195,6 +240,7 @@ public class TrackerBot {
                     String defaultEmptyListText = "Empty List!";
                     ConsoleDisplayStyle.printBasicStyling(inputLength, 0, defaultEmptyListText);
                 } else { //Texts Stored
+                    //Print from Instance Memory
                     ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
                     ConsoleDisplayStyle.printIndentation(inputLength);
                     System.out.printf("Here are the [%d] tasks in your list:\n", tasks.size());
@@ -211,6 +257,12 @@ public class TrackerBot {
                 //set task to done
                 taskTarget = tasks.get(taskIndex);
                 taskTarget.markAsDone();
+                try {
+                    f.writeToFile(null, tasks, false);
+                } catch (IOException e) {
+                    String message = "Failed to Mark in File. Please try again.";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                }
 
                 //print text
                 ConsoleDisplayStyle.printCommandStyling("mark",
@@ -224,6 +276,12 @@ public class TrackerBot {
                 //set task to undone
                 taskTarget = tasks.get(taskIndex);
                 taskTarget.markAsUndone();
+                try {
+                    f.writeToFile(null, tasks, false);
+                } catch (IOException e) {
+                    String message = "Failed to Mark in File. Please try again.";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                }
 
                 ConsoleDisplayStyle.printCommandStyling("unmark",
                         inputLength,
@@ -235,6 +293,12 @@ public class TrackerBot {
             case DELETE:
                 taskTarget = tasks.get(taskIndex);
                 tasks.remove(taskTarget);
+                try {
+                    f.writeToFile(null, tasks, false);
+                } catch (IOException e) {
+                    String message = "Failed to Mark in File. Please try again.";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                }
 
                 ConsoleDisplayStyle.printCommandStyling("delete",
                         inputLength,
@@ -248,6 +312,15 @@ public class TrackerBot {
 
             case ADDTASK:
                 tasks.add(taskTarget);
+
+                //to write it into file
+                try {
+                    f.writeToFile(taskTarget, tasks, true);
+                } catch (IOException e) {
+                    String message = "Failed to save task. Please Try Again";
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
+                    return;
+                }
 
                 ConsoleDisplayStyle.printCommandStyling("addTask",
                         inputLength,
