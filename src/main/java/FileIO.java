@@ -24,8 +24,12 @@ public final class FileIO {
         while (s.hasNextLine()) {
             String line = s.nextLine();
             if (Pattern.matches("[TDE] \\| [01] \\| .+( \\| .+ )?(\\| .+)?", line)) {
-                Task t = createTask(line);
-                tasks.add(t);
+                try {
+                    Task t = createTask(line);
+                    tasks.add(t);
+                } catch (TrackerBotException e) {
+                    throw new TrackerBotException("Could Not Create Task from Storage.");
+                }
             } else {
                 throw new TrackerBotException("Invalid Storage File Format!");
             }
@@ -33,7 +37,7 @@ public final class FileIO {
         return tasks;
     }
 
-    public static Task createTask(String input) {
+    public static Task createTask(String input) throws TrackerBotException {
         String[] splitLine = input.split(" \\| ");
         String type = splitLine[0]; //unused at this stage
         String isCompleted = splitLine[1];
