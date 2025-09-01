@@ -1,3 +1,5 @@
+package trackerbot;
+
 import java.lang.Math;
 
 public final class ConsoleDisplayStyle {

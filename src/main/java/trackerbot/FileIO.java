@@ -1,3 +1,5 @@
+package trackerbot;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -59,7 +61,7 @@ public final class FileIO {
                     Task t = createTask(line);
                     taskList.addTask(t);
                 } catch (TrackerBotException e) {
-                    throw new TrackerBotException("Could Not Create Task from Storage.");
+                    throw new TrackerBotException("Could Not Create trackerbot.Task from Storage.");
                 }
             } else {
                 throw new TrackerBotException("Invalid Storage File Format!");

@@ -1,3 +1,5 @@
+package trackerbot;
+
 public class UI {
     private final String name = "TrackerBot";
 
@@ -37,7 +39,7 @@ public class UI {
             break;
 
         case DELETE:
-            message = "Failed to Delete Task. Please try again.";
+            message = "Failed to Delete trackerbot.Task. Please try again.";
             ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 

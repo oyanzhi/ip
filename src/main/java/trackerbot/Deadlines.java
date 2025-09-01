@@ -1,14 +1,17 @@
+package trackerbot;
+
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
-public class Events extends Task {
-    protected LocalDateTime startDate;
-    protected LocalDateTime endDate;
+public class Deadlines extends Task {
+    protected LocalDateTime deadline;
 
-    public Events(String description, String startDate, String endDate) throws TrackerBotException {
+    public Deadlines(String description, String deadline) throws TrackerBotException {
         super(description);
+
+        //to add date recognition - accepts YYYY-mm-dd HHMM / MMM dd yyyy HHmm
         try {
             DateTimeFormatter format = new DateTimeFormatterBuilder()
                     .optionalStart()
@@ -16,19 +19,14 @@ public class Events extends Task {
                     .appendPattern("[MMM dd yyyy HHmm]")
                     .optionalEnd()
                     .toFormatter();
-            this.startDate = LocalDateTime.parse(startDate, format);
-            this.endDate = LocalDateTime.parse(endDate, format);
+            this.deadline = LocalDateTime.parse(deadline, format);
         } catch (DateTimeException e) {
             throw new TrackerBotException("Invalid Date-Time. Please Use YYYY-MM-DD HHMM or MMM DD YYYY HHmm");
         }
     }
 
     public String toString() {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
-        return String.format("[E][%s] %s (from: %s to: %s)",
-                this.getStatusIcon(),
-                this.description,
-                this.startDate.format(format),
-                this.endDate.format(format));
+        String formattedDeadline = this.deadline.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"));
+        return String.format("[D][%s] %s (by: %s)", this.getStatusIcon(), this.description, formattedDeadline);
     }
 }
