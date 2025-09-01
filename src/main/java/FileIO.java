@@ -2,20 +2,51 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public final class FileIO {
     private File f;
 
-    public FileIO(File file) {
-        this.f = file;
+    public FileIO() throws TrackerBotException {
+        //Set-Up Stored File Path
+        String currDir = System.getProperty("user.dir");
+
+        //to create parent directories
+        Path dataFolderDir = Paths.get(currDir, "data");
+        try {
+            Files.createDirectories(dataFolderDir);
+        } catch (IOException e) {
+            throw new TrackerBotException("Could Not Create Data Folder. Please Try Again.");
+        }
+
+        //actual storage file
+        Path p = Paths.get(dataFolderDir.toString(), "task_data");
+        try {
+            boolean fileExists = Files.exists(p);
+            if (!fileExists) {
+                throw new FileNotFoundException();
+            }
+            this.f = p.toFile();
+        } catch (FileNotFoundException e) {
+            //lets user know missing file - to create one
+            System.out.println(e.getMessage() + "\n" + "Missing Storage File. Creating a Storage File Now...");
+            try {
+                Files.createFile(p);
+            } catch (IOException ex) {
+                throw new TrackerBotException("Cannot Create File. Please try again.");
+            } finally {
+                this.f = p.toFile();
+            }
+        }
     }
 
-    public ArrayList<Task> readFileContents() throws FileNotFoundException, TrackerBotException {
+    public TaskList readFileContents() throws FileNotFoundException, TrackerBotException {
         Scanner s = new Scanner(this.f); // might throw FileNotFoundException
-        ArrayList<Task> tasks = new ArrayList<>();
+        TaskList taskList = new TaskList();
 
         /*
          * Expected Format:
@@ -26,7 +57,7 @@ public final class FileIO {
             if (Pattern.matches("[TDE] \\| [01] \\| .+( \\| .+ )?(\\| .+)?", line)) {
                 try {
                     Task t = createTask(line);
-                    tasks.add(t);
+                    taskList.addTask(t);
                 } catch (TrackerBotException e) {
                     throw new TrackerBotException("Could Not Create Task from Storage.");
                 }
@@ -34,7 +65,7 @@ public final class FileIO {
                 throw new TrackerBotException("Invalid Storage File Format!");
             }
         }
-        return tasks;
+        return taskList;
     }
 
     public static Task createTask(String input) throws TrackerBotException {
@@ -77,7 +108,7 @@ public final class FileIO {
         return t;
     }
 
-    public void writeToFile(Task t, ArrayList<Task> tasks, boolean isAppend) throws IOException {
+    public void writeToFile(Task t, TaskList taskList, boolean isAppend) throws IOException {
 
         //inner class for parsing and writing to file
         class editFile {
@@ -123,9 +154,9 @@ public final class FileIO {
             FileWriter fwClear = new FileWriter(this.f, false);
             fwClear.close();
 
-            for (Task task : tasks) {
+            for (int i = 0; i < taskList.getSize(); i++) {
                 FileWriter fwAdd = new FileWriter(this.f, true);
-                editFile.addTask(task, fwAdd);
+                editFile.addTask(taskList.getTask(i), fwAdd);
                 fwAdd.close();
             }
         }
