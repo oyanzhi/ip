@@ -1,3 +1,5 @@
+package trackerbot;
+
 public final class Parser {
 
     public static Trio<TrackerBot.Commands, Integer, Task> parseUserInput(
@@ -22,12 +24,12 @@ public final class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("mark".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 return new Trio<>(TrackerBot.Commands.MARK, taskIndex, taskTarget);
             } catch (NumberFormatException e) {
-                String message = "Missing Task Index. Example usage 'mark 1'";
+                String message = "Missing trackerbot.Task Index. Example usage 'mark 1'";
                 ConsoleDisplayStyle.printBasicStyling(4, message.length(),  message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {
@@ -44,12 +46,12 @@ public final class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("unmark".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 return new Trio<>(TrackerBot.Commands.UNMARK, taskIndex, taskTarget);
             } catch (NumberFormatException e) {
-                String message = "Missing Task Index. Example usage 'unmark 1'";
+                String message = "Missing trackerbot.Task Index. Example usage 'unmark 1'";
                 ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {
@@ -66,12 +68,12 @@ public final class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("delete".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 return new Trio<>(TrackerBot.Commands.DELETE, taskIndex, taskTarget);
             } catch (NumberFormatException e) {
-                String message = "Missing Task Index. Example usage 'delete 1'";
+                String message = "Missing trackerbot.Task Index. Example usage 'delete 1'";
                 ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {

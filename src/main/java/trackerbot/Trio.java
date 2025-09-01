@@ -1,3 +1,5 @@
+package trackerbot;
+
 public class Trio<U, V, W> {
     private final U head;
     private final V body;

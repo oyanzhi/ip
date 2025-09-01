@@ -1,6 +1,6 @@
 
 --------------------------------------------------
-Hello! I'm TrackerBot
+Hello! I'm trackerbot.TrackerBot
 What can I do for you?
 
 --------------------------------------------------
