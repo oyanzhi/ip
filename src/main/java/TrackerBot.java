@@ -15,6 +15,9 @@ public class TrackerBot {
         UNMARK,
         DELETE,
         ADDTASK,
+        TODO,
+        DEADLINE,
+        EVENT,
         BYE,
         LIST,
         DEFAULT
@@ -37,7 +40,7 @@ public class TrackerBot {
 
         //actual storage file
         Path p = Paths.get(dataFolderDir.toString(), "task_data");
-        FileIO f = null;
+        FileIO f;
         try {
             boolean fileExists = Files.exists(p);
             if (!fileExists) {
@@ -164,7 +167,7 @@ public class TrackerBot {
                         throw new TrackerBotException("Missing Arguments! Example usage 'todo tasking'");
                     }
                     String taskDescription = userInput.substring("todo ".length());
-                    if (taskDescription.equals("")) {
+                    if (taskDescription.isEmpty()) {
                         throw new TrackerBotException("Missing Description. Example usage 'todo tasking'");
                     }
                     taskTarget = new ToDos(taskDescription);
@@ -342,6 +345,9 @@ public class TrackerBot {
                 ConsoleDisplayStyle.printIndentation(inputLength);
                 System.out.println("Possible Commands:");
                 for (Commands c : Commands.values()) {
+                    if (c == Commands.ADDTASK || c == Commands.DEFAULT) {
+                        continue;
+                    }
                     ConsoleDisplayStyle.printIndentation(inputLength);
                     System.out.println(c);
                 }
