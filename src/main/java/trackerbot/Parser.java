@@ -9,12 +9,13 @@ public abstract class Parser {
      * A method used to parse user inputs
      * @param userInput String representing the user input
      * @param taskList Current instance memory of the task list in the running process
-     * @return A Trio where the head is the command, body is the task index, and tail is the task
+     * @return A Trio where the head is the command, body is the task index, and tail is a new list of Tasks
      */
-    public static Trio<TrackerBot.Commands, Integer, Task> parseUserInput(
+    public static Trio<TrackerBot.Commands, Integer, TaskList> parseUserInput(
             String userInput, TaskList taskList) {
 
         int taskIndex = -1;
+        TaskList tList = new TaskList();
 
         //to parse utility inputs
         if (userInput.startsWith("list")) {
@@ -23,6 +24,20 @@ public abstract class Parser {
 
         if (userInput.startsWith("bye")) {
             return new Trio<>(TrackerBot.Commands.BYE, null, null);
+        }
+
+        if (userInput.startsWith("find")) {
+            try {
+                if ("find".length() + 1 > userInput.length()) {
+                    throw new TrackerBotException("Missing Arguments! Example usage 'find text'");
+                }
+                String toSearchDescription = userInput.substring(5);
+                tList = taskList.getAllRelatedTask(toSearchDescription);
+                return new Trio<>(TrackerBot.Commands.FIND, null, tList);
+            } catch (TrackerBotException e) {
+                ConsoleDisplayStyle.printBasicStyling(4, e.getMessage().length(), e.getMessage());
+                return new Trio<>(TrackerBot.Commands.INVALID, null, null);
+            }
         }
 
         //to parse input of mark
@@ -36,7 +51,8 @@ public abstract class Parser {
                     throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
-                return new Trio<>(TrackerBot.Commands.MARK, taskIndex, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(TrackerBot.Commands.MARK, taskIndex, tList);
             } catch (NumberFormatException e) {
                 String message = "Missing trackerbot.Task Index. Example usage 'mark 1'";
                 ConsoleDisplayStyle.printBasicStyling(4, message.length(),  message);
@@ -58,7 +74,8 @@ public abstract class Parser {
                     throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
-                return new Trio<>(TrackerBot.Commands.UNMARK, taskIndex, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(TrackerBot.Commands.UNMARK, taskIndex, tList);
             } catch (NumberFormatException e) {
                 String message = "Missing trackerbot.Task Index. Example usage 'unmark 1'";
                 ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
@@ -80,7 +97,8 @@ public abstract class Parser {
                     throw new TrackerBotException("Invalid trackerbot.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
-                return new Trio<>(TrackerBot.Commands.DELETE, taskIndex, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(TrackerBot.Commands.DELETE, taskIndex, tList);
             } catch (NumberFormatException e) {
                 String message = "Missing trackerbot.Task Index. Example usage 'delete 1'";
                 ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
@@ -104,7 +122,8 @@ public abstract class Parser {
                 }
                 Task taskTarget = new ToDos(taskDescription);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
-                return new Trio<>(userCommand, null, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(userCommand, null, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(4, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
@@ -128,7 +147,8 @@ public abstract class Parser {
 
                 Task taskTarget = new Deadlines(taskDescription, deadline);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
-                return new Trio<>(userCommand, null, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(userCommand, null, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(8, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
@@ -157,7 +177,8 @@ public abstract class Parser {
 
                 Task taskTarget = new Events(taskDescription, startDate, endDate);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
-                return new Trio<>(userCommand, null, taskTarget);
+                tList.addTask(taskTarget);
+                return new Trio<>(userCommand, null, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(5, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);

@@ -71,6 +71,21 @@ public class TaskList {
     }
 
     /**
+     * Returns a TaskList for all tasks matching the given description
+     * @param toSearchDescription String to match to individual task's description
+     * @return TaskList that contains all the tasks that matches the given description
+     */
+    public TaskList getAllRelatedTask(String toSearchDescription) {
+        TaskList results = new TaskList();
+        for (Task t : this.taskList) {
+            if (t.checkDescription(toSearchDescription)) {
+                results.addTask(t);
+            }
+        }
+        return results;
+    }
+
+    /**
      * Prints the Task List in the correct styling into the console
      * @param maxInputLength Used to format the horizontal line such that it covers the longest task row
      */

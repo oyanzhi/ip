@@ -22,6 +22,7 @@ public class TrackerBot {
         EVENT,
         BYE,
         LIST,
+        FIND,
         DEFAULT,
         INVALID
     }
@@ -54,10 +55,11 @@ public class TrackerBot {
         while (!exitLoop && inputScanner.hasNextLine()) {
             String userInput = inputScanner.nextLine();
             int inputLength = userInput.length();
-            Trio<Commands, Integer, Task> commandsIndexTaskTrio = Parser.parseUserInput(userInput, this.taskList);
+            Trio<Commands, Integer, TaskList> commandsIndexTaskTrio = Parser.parseUserInput(userInput, this.taskList);
             Commands userCommand = commandsIndexTaskTrio.getHead();
             Integer taskIndex = commandsIndexTaskTrio.getBody();
-            Task taskTarget = commandsIndexTaskTrio.getTail();
+            TaskList taskTargetList = commandsIndexTaskTrio.getTail();
+            Task taskTarget = taskIndex != null ? taskTargetList.getTask(taskIndex) : null;
 
             //Bot Replies Instead of Echo
             int stylingIndex = 7;
@@ -132,6 +134,10 @@ public class TrackerBot {
                     ConsoleDisplayStyle.printIndentation(inputLength);
                     System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
                     ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
+                    break;
+
+                case FIND:
+                    taskTargetList.printTaskList(maxInputLength);
                     break;
 
                 case INVALID:

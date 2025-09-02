@@ -39,6 +39,15 @@ public abstract class Task {
     }
 
     /**
+     * A method that matches current task's description with a specific description
+     * @param toSearchDescription
+     * @return
+     */
+    public boolean checkDescription(String toSearchDescription) {
+        return this.description.contains(toSearchDescription);
+    }
+
+    /**
      * {@inheritDoc}
      * @return A string representation of the task in the form [ ][isCompleted] Task Description
      */
