@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Main class of the Console Bot
+ */
 public class TrackerBot {
     private FileIO f;
     private TaskList taskList;
@@ -23,6 +26,9 @@ public class TrackerBot {
         INVALID
     }
 
+    /**
+     * Returns an instance of the console TrackerBot with the correct settings
+     */
     public TrackerBot() {
         try {
             this.f = new FileIO();
@@ -33,6 +39,9 @@ public class TrackerBot {
         }
     }
 
+    /**
+     * Starts running the TrackerBot in the console
+     */
     public void run() {
 
         this.ui.greet();

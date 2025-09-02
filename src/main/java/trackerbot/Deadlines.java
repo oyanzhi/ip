@@ -5,9 +5,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
+/**
+ * Is a type of task that extends from Task with an additional deadline
+ */
 public class Deadlines extends Task {
     protected LocalDateTime deadline;
 
+    /**
+     * Creates a deadline task with the following details
+     * @param description Description of the task
+     * @param deadline Deadline of the task
+     * @throws TrackerBotException Error thrown when the deadline cannot be parsed due to incorrect format
+     */
     public Deadlines(String description, String deadline) throws TrackerBotException {
         super(description);
 
@@ -25,6 +34,11 @@ public class Deadlines extends Task {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * String representation of deadline given by [D][isCompleted] TaskDescription (by: Deadline)
+     */
+    @Override
     public String toString() {
         String formattedDeadline = this.deadline.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm"));
         return String.format("[D][%s] %s (by: %s)", this.getStatusIcon(), this.description, formattedDeadline);

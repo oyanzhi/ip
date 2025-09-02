@@ -1,7 +1,16 @@
 package trackerbot;
 
-public final class Parser {
+/**
+ * A static class that contains all the utility methods for parsing user input
+ */
+public abstract class Parser {
 
+    /**
+     * A method used to parse user inputs
+     * @param userInput String representing the user input
+     * @param taskList Current instance memory of the task list in the running process
+     * @return A Trio where the head is the command, body is the task index, and tail is the task
+     */
     public static Trio<TrackerBot.Commands, Integer, Task> parseUserInput(
             String userInput, TaskList taskList) {
 
