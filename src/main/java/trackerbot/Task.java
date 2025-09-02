@@ -21,6 +21,10 @@ public class Task {
         this.isDone = false;
     }
 
+    public boolean checkDescription(String toSearchDescription) {
+        return this.description.contains(toSearchDescription);
+    }
+
     public String toString() {
         return String.format("[ ][%s] %s", this.getStatusIcon(), this.description);
     }

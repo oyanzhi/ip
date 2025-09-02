@@ -64,6 +64,10 @@ public final class ConsoleDisplayStyle {
         case "addTask":
             System.out.println("Got it. I've added this task:");
             break;
+
+        case "find":
+            System.out.println("Here are the matching tasks in your list:");
+            break;
         }
         //print task specific text
         ConsoleDisplayStyle.printIndentation(spacing + 2);

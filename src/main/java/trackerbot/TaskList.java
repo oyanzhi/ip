@@ -37,6 +37,16 @@ public class TaskList {
         this.taskList.get(taskIndex).markAsUndone();
     }
 
+    public TaskList getAllRelatedTask(String toSearchDescription) {
+        TaskList results = new TaskList();
+        for (Task t : this.taskList) {
+            if (t.checkDescription(toSearchDescription)) {
+                results.addTask(t);
+            }
+        }
+        return results;
+    }
+
     public void printTaskList(int maxInputLength) {
         if (taskList.isEmpty()) { //No Texts Stored
             String defaultEmptyListText = "Empty List!";
