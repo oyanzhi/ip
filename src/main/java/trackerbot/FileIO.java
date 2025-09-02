@@ -10,9 +10,16 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+/**
+ * A class used for File Management of the Task Storage
+ */
 public final class FileIO {
     private File f;
 
+    /**
+     * Creates a Storage FileIO
+     * @throws TrackerBotException Error thrown when the directory or file is unable to be created
+     */
     public FileIO() throws TrackerBotException {
         //Set-Up Stored File Path
         String currDir = System.getProperty("user.dir");
@@ -46,6 +53,12 @@ public final class FileIO {
         }
     }
 
+    /**
+     * A method for reading the contents of the file
+     * @return A TaskList that contains all the tasks that are stored in the file
+     * @throws FileNotFoundException Thrown when the scanner cannot be created off the stored file
+     * @throws TrackerBotException Thrown when the storage file is invalid format or task cannot be created
+     */
     public TaskList readFileContents() throws FileNotFoundException, TrackerBotException {
         Scanner s = new Scanner(this.f); // might throw FileNotFoundException
         TaskList taskList = new TaskList();
@@ -61,7 +74,7 @@ public final class FileIO {
                     Task t = createTask(line);
                     taskList.addTask(t);
                 } catch (TrackerBotException e) {
-                    throw new TrackerBotException("Could Not Create trackerbot.Task from Storage.");
+                    throw new TrackerBotException("Could Not Create Task from Storage.");
                 }
             } else {
                 throw new TrackerBotException("Invalid Storage File Format!");
@@ -70,9 +83,15 @@ public final class FileIO {
         return taskList;
     }
 
+    /**
+     * Creates a task from individual lines from the storage file
+     * @param input The line being read from the storage file
+     * @return Task that is created based on each given line
+     * @throws TrackerBotException Thrown when any of the task cannot be created
+     */
     public static Task createTask(String input) throws TrackerBotException {
         String[] splitLine = input.split(" \\| ");
-        String type = splitLine[0]; //unused at this stage
+        String type = splitLine[0];
         String isCompleted = splitLine[1];
         String taskDescription = splitLine[2];
         Task t = null;
@@ -110,6 +129,13 @@ public final class FileIO {
         return t;
     }
 
+    /**
+     * Edits the storage file based on interactions with the bot
+     * @param t Task that is being targeted in the file
+     * @param taskList Current instance of all tasks in the running process of TrackerBot
+     * @param isAppend Boolean on whether the to rewrite the file or add a next line to the file
+     * @throws IOException Thrown when the file cannot be edited
+     */
     public void writeToFile(Task t, TaskList taskList, boolean isAppend) throws IOException {
 
         //inner class for parsing and writing to file
