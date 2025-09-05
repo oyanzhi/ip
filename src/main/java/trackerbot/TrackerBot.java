@@ -59,8 +59,7 @@ public class TrackerBot {
             Commands userCommand = commandsIndexTaskTrio.getHead();
             Integer taskIndex = commandsIndexTaskTrio.getBody();
             TaskList taskTargetList = commandsIndexTaskTrio.getTail();
-            Task taskTarget = taskIndex != null ? taskTargetList.getTask(taskIndex) : null;
-
+            Task taskTarget = taskIndex != null ? taskTargetList.getTask(0) : null;
             //Bot Replies Instead of Echo
             int stylingIndex = 7;
             switch (userCommand) {

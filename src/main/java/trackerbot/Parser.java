@@ -123,7 +123,7 @@ public abstract class Parser {
                 Task taskTarget = new ToDos(taskDescription);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
                 tList.addTask(taskTarget);
-                return new Trio<>(userCommand, null, tList);
+                return new Trio<>(userCommand, taskList.getSize() - 1, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(4, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
@@ -148,7 +148,7 @@ public abstract class Parser {
                 Task taskTarget = new Deadlines(taskDescription, deadline);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
                 tList.addTask(taskTarget);
-                return new Trio<>(userCommand, null, tList);
+                return new Trio<>(userCommand, taskList.getSize() - 1, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(8, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
@@ -178,7 +178,7 @@ public abstract class Parser {
                 Task taskTarget = new Events(taskDescription, startDate, endDate);
                 TrackerBot.Commands userCommand = TrackerBot.Commands.ADDTASK;
                 tList.addTask(taskTarget);
-                return new Trio<>(userCommand, null, tList);
+                return new Trio<>(userCommand, taskList.getSize() - 1, tList);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(5, e.getMessage().length(), e.getMessage());
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
