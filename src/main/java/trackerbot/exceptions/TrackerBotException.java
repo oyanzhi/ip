@@ -1,4 +1,4 @@
-package trackerbot;
+package trackerbot.exceptions;
 
 /**
  * A specific type of exception created for TrackerBot

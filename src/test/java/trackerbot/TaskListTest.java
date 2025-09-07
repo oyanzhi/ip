@@ -1,9 +1,15 @@
 package trackerbot;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
+import trackerbot.exceptions.TrackerBotException;
+import trackerbot.tasks.Deadlines;
+import trackerbot.tasks.Task;
+import trackerbot.utils.TaskList;
+
 
 public class TaskListTest {
     @Test

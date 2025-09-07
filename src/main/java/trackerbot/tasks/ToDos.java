@@ -1,4 +1,4 @@
-package trackerbot;
+package trackerbot.tasks;
 
 /**
  * Is a type of task that extends from Task without any additional information
