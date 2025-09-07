@@ -112,7 +112,18 @@ public class TaskList {
         }
     }
 
-
+    public String returnTaskList() {
+        if (taskList.isEmpty()) {
+            return "Empty List!";
+        } else {
+            String message = String.format("Here are the [%d] tasks in your list:\n", this.taskList.size());
+            for (int i = 0; i < this.taskList.size(); i++) { //Non-Empty Texts Stored
+                String oneRow = String.format("%d. %s\n", i + 1, this.taskList.get(i));
+                message += oneRow;
+            }
+            return message;
+        }
+    }
 
 
 }
