@@ -3,6 +3,8 @@ package trackerbot.ui;
 import trackerbot.TrackerBot;
 import trackerbot.tasks.Task;
 
+import java.io.Console;
+
 /**
  * A class to maintain most of the interactions of the bot in the console
  */
@@ -37,11 +39,35 @@ public class UI {
      * @param maxInputLength Length of the horizontal line separator
      * @param taskTarget Task that is to be printed
      */
-    public void printTask(String command, int inputLength, int maxInputLength, Task taskTarget) {
-        ConsoleDisplayStyle.printCommandStyling(command,
-                inputLength,
-                maxInputLength + 7,
-                taskTarget);
+    public String printTask(String command, int inputLength, int maxInputLength, Task taskTarget, boolean isConsole) {
+        if (isConsole) {
+            ConsoleDisplayStyle.printCommandStyling(command,
+                    inputLength,
+                    maxInputLength + 7,
+                    taskTarget);
+            return null;
+        } else {
+            String message = "";
+            switch (command) {
+            case "mark":
+                message = String.format("OK! I've marked this task as done! \n %s", taskTarget);
+                break;
+
+            case "unmark":
+                message = String.format("OK! I've marked this task as undone! \n %s", taskTarget);
+                break;
+
+            case "delete":
+                message = String.format("OK! I've deleted this task! \n %s", taskTarget);
+                break;
+
+            case "addTask":
+                message = String.format("OK! I've added this task! \n %s", taskTarget);
+                break;
+            }
+            return message;
+        }
+
     }
 
     /**
@@ -49,38 +75,36 @@ public class UI {
      * @param command String representation of the user command
      * @param inputLength Length of the user input used for indentation
      */
-    public void printErrorMessage(TrackerBot.Commands command, int inputLength) {
-        String message;
+    public String printErrorMessage(TrackerBot.Commands command, int inputLength, boolean isConsole) {
+        String message = "";
         switch (command) {
         case MARK:
             message = "Failed to Mark in File. Please try again.";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case UNMARK:
             message = "Failed to Unmark in File. Please try again.";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case DELETE:
             message = "Failed to Delete trackerbot.Tasks.Task. Please try again.";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case ADDTASK:
             message = "Failed to save task. Please Try Again";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case DEFAULT:
             message = "Missing Command!";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, message);
             break;
 
         default:
             //added for style purposes
             break;
         }
+
+        return message;
+
     }
 
 }
