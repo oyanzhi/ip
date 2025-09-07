@@ -1,6 +1,11 @@
-package trackerbot;
+package trackerbot.utils;
 
 import java.util.ArrayList;
+
+import trackerbot.tasks.Task;
+import trackerbot.ui.ConsoleDisplayStyle;
+
+
 
 /**
  * A class that is used to store a list of Tasks

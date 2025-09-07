@@ -1,4 +1,7 @@
-package trackerbot;
+package trackerbot.ui;
+
+import trackerbot.TrackerBot;
+import trackerbot.tasks.Task;
 
 /**
  * A class to maintain most of the interactions of the bot in the console
@@ -60,18 +63,22 @@ public class UI {
             break;
 
         case DELETE:
-            message = "Failed to Delete trackerbot.Task. Please try again.";
+            message = "Failed to Delete trackerbot.Tasks.Task. Please try again.";
             ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case ADDTASK:
             message = "Failed to save task. Please Try Again";
-            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(),  message);
+            ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
             break;
 
         case DEFAULT:
             message = "Missing Command!";
             ConsoleDisplayStyle.printBasicStyling(inputLength, inputLength + 7, message);
+            break;
+
+        default:
+            //added for style purposes
             break;
         }
     }

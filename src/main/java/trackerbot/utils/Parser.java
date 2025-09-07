@@ -1,4 +1,12 @@
-package trackerbot;
+package trackerbot.utils;
+
+import trackerbot.TrackerBot;
+import trackerbot.exceptions.TrackerBotException;
+import trackerbot.tasks.Deadlines;
+import trackerbot.tasks.Events;
+import trackerbot.tasks.Task;
+import trackerbot.tasks.ToDos;
+import trackerbot.ui.ConsoleDisplayStyle;
 
 /**
  * A static class that contains all the utility methods for parsing user input
@@ -48,14 +56,14 @@ public abstract class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("mark".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid trackerbot.Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Tasks.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 tList.addTask(taskTarget);
                 return new Trio<>(TrackerBot.Commands.MARK, taskIndex, tList);
             } catch (NumberFormatException e) {
-                String message = "Missing trackerbot.Task Index. Example usage 'mark 1'";
-                ConsoleDisplayStyle.printBasicStyling(4, message.length(),  message);
+                String message = "Missing trackerbot.Tasks.Task Index. Example usage 'mark 1'";
+                ConsoleDisplayStyle.printBasicStyling(4, message.length(), message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(4, e.getMessage().length(), e.getMessage());
@@ -71,14 +79,14 @@ public abstract class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("unmark".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid trackerbot.Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Tasks.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 tList.addTask(taskTarget);
                 return new Trio<>(TrackerBot.Commands.UNMARK, taskIndex, tList);
             } catch (NumberFormatException e) {
-                String message = "Missing trackerbot.Task Index. Example usage 'unmark 1'";
-                ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
+                String message = "Missing trackerbot.Tasks.Task Index. Example usage 'unmark 1'";
+                ConsoleDisplayStyle.printBasicStyling(6, message.length(), message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(6, e.getMessage().length(), e.getMessage());
@@ -94,14 +102,14 @@ public abstract class Parser {
                 }
                 taskIndex = Integer.parseInt(userInput.substring("delete".length() + 1)) - 1;
                 if (taskIndex < 0 || taskIndex >= taskList.getSize()) {
-                    throw new TrackerBotException("Invalid trackerbot.Task Index");
+                    throw new TrackerBotException("Invalid trackerbot.Tasks.Task Index");
                 }
                 Task taskTarget = taskList.getTask(taskIndex);
                 tList.addTask(taskTarget);
                 return new Trio<>(TrackerBot.Commands.DELETE, taskIndex, tList);
             } catch (NumberFormatException e) {
-                String message = "Missing trackerbot.Task Index. Example usage 'delete 1'";
-                ConsoleDisplayStyle.printBasicStyling(6, message.length(),  message);
+                String message = "Missing trackerbot.Tasks.Task Index. Example usage 'delete 1'";
+                ConsoleDisplayStyle.printBasicStyling(6, message.length(), message);
                 return new Trio<>(TrackerBot.Commands.INVALID, null, null);
             } catch (TrackerBotException e) {
                 ConsoleDisplayStyle.printBasicStyling(6, e.getMessage().length(), e.getMessage());
@@ -164,8 +172,8 @@ public abstract class Parser {
                 if (("event".length() + 1) > userInput.length() || startDateIndex <= 7 || endDateIndex <= 15
                         || userInput.charAt(startDateIndex - 1) != ' '
                         || userInput.charAt(endDateIndex - 1) != ' ') {
-                    throw new TrackerBotException("Missing Arguments! " +
-                            "Example usage 'event tasking /from startDate /to endDate");
+                    throw new TrackerBotException("Missing Arguments! "
+                            + "Example usage 'event tasking /from startDate /to endDate");
                 }
 
                 //-1 to account for space between description and /from

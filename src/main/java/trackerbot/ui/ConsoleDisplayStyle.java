@@ -1,6 +1,6 @@
-package trackerbot;
+package trackerbot.ui;
 
-import java.lang.Math;
+import trackerbot.tasks.Task;
 
 /**
  * Is a abstract class used for printing and styling texts in the console
@@ -62,7 +62,7 @@ public abstract class ConsoleDisplayStyle {
      * @param isCompleted Whether the task is Completed
      * @param taskDescription Description of the task
      */
-    public static void printTaskStyling( //for printing from storage - unused at this stage
+    public static void printTaskStyling(//for printing from storage - unused at this stage
             int indentation, int maxInputLength, int index, String type, String isCompleted, String taskDescription) {
         ConsoleDisplayStyle.printIndentation(indentation);
         String oneRow = String.format("%d.[%s][%s] %s", index, type, isCompleted, taskDescription);
@@ -101,6 +101,10 @@ public abstract class ConsoleDisplayStyle {
 
         case "find":
             System.out.println("Here are the matching tasks in your list:");
+            break;
+
+        default:
+            //added for style purposes
             break;
         }
         //print task specific text

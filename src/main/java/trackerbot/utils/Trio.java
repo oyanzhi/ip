@@ -1,4 +1,4 @@
-package trackerbot;
+package trackerbot.utils;
 
 /**
  * A class used to represent an object of 3 varying data types

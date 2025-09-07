@@ -4,6 +4,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import trackerbot.exceptions.TrackerBotException;
+import trackerbot.tasks.Task;
+import trackerbot.ui.ConsoleDisplayStyle;
+import trackerbot.ui.UI;
+import trackerbot.utils.FileIO;
+import trackerbot.utils.Parser;
+import trackerbot.utils.TaskList;
+import trackerbot.utils.Trio;
+
+
 /**
  * Main class of the Console Bot
  */
@@ -12,6 +22,9 @@ public class TrackerBot {
     private TaskList taskList;
     private UI ui;
 
+    /**
+     * An enum class for all commands available for use for the bot
+     */
     public enum Commands {
         MARK,
         UNMARK,
@@ -36,7 +49,7 @@ public class TrackerBot {
             this.taskList = this.f.readFileContents();
             this.ui = new UI();
         } catch (TrackerBotException | FileNotFoundException e) {
-            ConsoleDisplayStyle.printBasicStyling(0,0, e.getMessage());
+            ConsoleDisplayStyle.printBasicStyling(0, 0, e.getMessage());
         }
     }
 
@@ -63,101 +76,105 @@ public class TrackerBot {
             //Bot Replies Instead of Echo
             int stylingIndex = 7;
             switch (userCommand) {
-                case BYE:
-                    exitLoop = true;
-                    this.ui.sayBye();
-                    break;
+            case BYE:
+                exitLoop = true;
+                this.ui.sayBye();
+                break;
 
-                case LIST:
-                    this.taskList.printTaskList(maxInputLength);
-                    break;
+            case LIST:
+                this.taskList.printTaskList(maxInputLength);
+                break;
 
-                case MARK:
-                    //set task to done
-                    this.taskList.markTask(taskIndex);
-                    try {
-                        this.f.writeToFile(null, this.taskList, false);
-                    } catch (IOException e) {
-                        this.ui.printErrorMessage(Commands.MARK, inputLength);
+            case MARK:
+                //set task to done
+                this.taskList.markTask(taskIndex);
+                try {
+                    this.f.writeToFile(null, this.taskList, false);
+                } catch (IOException e) {
+                    this.ui.printErrorMessage(Commands.MARK, inputLength);
+                }
+
+                //print text
+                this.ui.printTask("mark", inputLength, maxInputLength, taskTarget);
+
+                break;
+
+            case UNMARK:
+                //set task to undone
+                this.taskList.unmarkTask(taskIndex);
+                try {
+                    f.writeToFile(null, this.taskList, false);
+                } catch (IOException e) {
+                    this.ui.printErrorMessage(Commands.UNMARK, inputLength);
+                }
+
+                //print text
+                this.ui.printTask("unmark", inputLength, maxInputLength, taskTarget);
+
+                break;
+
+            case DELETE:
+                this.taskList.removeTask(taskIndex);
+                try {
+                    f.writeToFile(null, this.taskList, false);
+                } catch (IOException e) {
+                    this.ui.printErrorMessage(Commands.DELETE, inputLength);
+                }
+
+                //print text
+                this.ui.printTask("delete", inputLength, maxInputLength, taskTarget);
+
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength);
+                break;
+
+            case ADDTASK:
+                this.taskList.addTask(taskTarget);
+
+                //to write it into file
+                try {
+                    f.writeToFile(taskTarget, this.taskList, true);
+                } catch (IOException e) {
+                    this.ui.printErrorMessage(Commands.ADDTASK, inputLength);
+                    return;
+                }
+
+                //prints added task
+                this.ui.printTask("addTask", inputLength, maxInputLength, taskTarget);
+
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
+                break;
+
+            case FIND:
+                taskTargetList.printTaskList(maxInputLength);
+                break;
+
+            case INVALID:
+                //do nothing and wait for next line
+                break;
+
+            case DEFAULT:
+                this.ui.printErrorMessage(Commands.DEFAULT, inputLength);
+
+                //show possible commands
+                ConsoleDisplayStyle.printIndentation(inputLength);
+                System.out.println("Possible Commands:");
+                for (Commands c : Commands.values()) {
+                    if (c == Commands.ADDTASK || c == Commands.DEFAULT || c == Commands.INVALID) {
+                        continue;
                     }
-
-                    //print text
-                    this.ui.printTask("mark", inputLength, maxInputLength, taskTarget);
-
-                    break;
-
-                case UNMARK:
-                    //set task to undone
-                    this.taskList.unmarkTask(taskIndex);
-                    try {
-                        f.writeToFile(null, this.taskList, false);
-                    } catch (IOException e) {
-                        this.ui.printErrorMessage(Commands.UNMARK, inputLength);
-                    }
-
-                    //print text
-                    this.ui.printTask("unmark", inputLength, maxInputLength, taskTarget);
-
-                    break;
-
-                case DELETE:
-                    this.taskList.removeTask(taskIndex);
-                    try {
-                        f.writeToFile(null, this.taskList, false);
-                    } catch (IOException e) {
-                        this.ui.printErrorMessage(Commands.DELETE, inputLength);
-                    }
-
-                    //print text
-                    this.ui.printTask("delete", inputLength, maxInputLength, taskTarget);
-
                     ConsoleDisplayStyle.printIndentation(inputLength);
-                    System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength);
-                    break;
+                    System.out.println(c);
+                }
+                ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
+                break;
 
-                case ADDTASK:
-                    this.taskList.addTask(taskTarget);
-
-                    //to write it into file
-                    try {
-                        f.writeToFile(taskTarget, this.taskList, true);
-                    } catch (IOException e) {
-                        this.ui.printErrorMessage(Commands.ADDTASK, inputLength);
-                        return;
-                    }
-
-                    //prints added task
-                    this.ui.printTask("addTask", inputLength, maxInputLength, taskTarget);
-
-                    ConsoleDisplayStyle.printIndentation(inputLength);
-                    System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, maxInputLength + stylingIndex);
-                    break;
-
-                case FIND:
-                    taskTargetList.printTaskList(maxInputLength);
-                    break;
-
-                case INVALID:
-                    //do nothing and wait for next line
-                    break;
-
-                case DEFAULT:
-                    this.ui.printErrorMessage(Commands.DEFAULT, inputLength);
-
-                    //show possible commands
-                    ConsoleDisplayStyle.printIndentation(inputLength);
-                    System.out.println("Possible Commands:");
-                    for (Commands c : Commands.values()) {
-                        if (c == Commands.ADDTASK || c == Commands.DEFAULT || c == Commands.INVALID) {
-                            continue;
-                        }
-                        ConsoleDisplayStyle.printIndentation(inputLength);
-                        System.out.println(c);
-                    }
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
-                    break;
+            default:
+                //added for style purposes
+                break;
             }
 
         }

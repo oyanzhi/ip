@@ -1,4 +1,4 @@
-package trackerbot;
+package trackerbot.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,6 +9,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import trackerbot.exceptions.TrackerBotException;
+import trackerbot.tasks.Deadlines;
+import trackerbot.tasks.Events;
+import trackerbot.tasks.Task;
+import trackerbot.tasks.ToDos;
+
+
 
 /**
  * A class used for File Management of the Task Storage
@@ -125,6 +133,9 @@ public final class FileIO {
                 t.markAsUndone();
             }
             break;
+
+        default:
+            break;
         }
         return t;
     }
@@ -139,7 +150,7 @@ public final class FileIO {
     public void writeToFile(Task t, TaskList taskList, boolean isAppend) throws IOException {
 
         //inner class for parsing and writing to file
-        class editFile {
+        class EditFile {
             public static void addTask(Task t, FileWriter fw) throws IOException {
                 //appends to the end of task list
                 //requires parse
@@ -168,13 +179,17 @@ public final class FileIO {
                     String endDate = taskParse.substring(endDateIndex + 5, taskParse.length() - 1);
                     fw.write(toAdd + eventDescription + " | " + startDate + " | " + endDate + System.lineSeparator());
                     break;
+
+                default:
+                    //added for style purposes
+                    break;
                 }
             }
         }
 
         if (isAppend) { //singular task
             FileWriter fw = new FileWriter(this.f, true);
-            editFile.addTask(t, fw);
+            EditFile.addTask(t, fw);
             fw.close();
         } else { //requires rewrite to file
 
@@ -184,7 +199,7 @@ public final class FileIO {
 
             for (int i = 0; i < taskList.getSize(); i++) {
                 FileWriter fwAdd = new FileWriter(this.f, true);
-                editFile.addTask(taskList.getTask(i), fwAdd);
+                EditFile.addTask(taskList.getTask(i), fwAdd);
                 fwAdd.close();
             }
         }

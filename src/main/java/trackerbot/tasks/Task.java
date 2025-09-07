@@ -1,4 +1,4 @@
-package trackerbot;
+package trackerbot.tasks;
 
 /**
  * An abstract superclass for all the types of task to inherit from

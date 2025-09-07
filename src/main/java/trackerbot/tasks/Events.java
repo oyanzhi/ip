@@ -1,9 +1,11 @@
-package trackerbot;
+package trackerbot.tasks;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+
+import trackerbot.exceptions.TrackerBotException;
 
 /**
  * Is a type of task that extends from Task with an additional start date and end date
