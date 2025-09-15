@@ -8,7 +8,10 @@ import trackerbot.exceptions.TrackerBotException;
 import trackerbot.tasks.Task;
 import trackerbot.ui.ConsoleDisplayStyle;
 import trackerbot.ui.UI;
-import trackerbot.utils.*;
+import trackerbot.utils.FileIO;
+import trackerbot.utils.Parser;
+import trackerbot.utils.TaskList;
+import trackerbot.utils.Trio;
 
 
 /**
@@ -69,7 +72,7 @@ public class TrackerBot {
     }
 
     public boolean botCompute(boolean isConsole, String userInput) {
-            int inputLength = userInput.length();
+        int inputLength = userInput.length();
 
         Trio<Commands, Integer, TaskList> commandsIndexTaskTrio;
         try {
@@ -84,9 +87,12 @@ public class TrackerBot {
             }
         }
         Commands userCommand = commandsIndexTaskTrio.getHead();
-            Integer taskIndex = commandsIndexTaskTrio.getBody();
-            TaskList taskTargetList = commandsIndexTaskTrio.getTail();
-            Task taskTarget = taskIndex != null ? taskTargetList.getTask(0) : null;
+
+        assert userCommand != null : "user command should not be null";
+
+        Integer taskIndex = commandsIndexTaskTrio.getBody();
+        TaskList taskTargetList = commandsIndexTaskTrio.getTail();
+        Task taskTarget = taskIndex != null ? taskTargetList.getTask(0) : null;
 
             //Bot Replies
             switch (userCommand) {
