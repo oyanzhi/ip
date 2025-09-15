@@ -14,7 +14,6 @@ public class ToDos extends Task {
 
     /**
      * {@inheritDoc}
-     * @return A string representation of the ToDos Task in the form of [T][isCompleted] TaskDescription
      */
     public String toString() {
         return String.format("[T][%s] %s", this.getStatusIcon(), this.description);

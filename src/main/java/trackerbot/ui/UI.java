@@ -12,7 +12,7 @@ public class UI {
     private final String name = "TrackerBot";
 
     /**
-     * A method that prints the initial greeting of the bot into the console
+     * Prints the initial greeting of the bot into the console
      */
     public void greet() {
         //Initial Greeting
@@ -25,7 +25,7 @@ public class UI {
     }
 
     /**
-     * A method that prints the ending text of the bot into the console
+     * Prints the ending text of the bot into the console
      */
     public void sayBye() {
         String defaultExitText = "Bye. Hope to see you again soon!";

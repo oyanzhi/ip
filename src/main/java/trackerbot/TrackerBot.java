@@ -8,10 +8,7 @@ import trackerbot.exceptions.TrackerBotException;
 import trackerbot.tasks.Task;
 import trackerbot.ui.ConsoleDisplayStyle;
 import trackerbot.ui.UI;
-import trackerbot.utils.FileIO;
-import trackerbot.utils.Parser;
-import trackerbot.utils.TaskList;
-import trackerbot.utils.Trio;
+import trackerbot.utils.*;
 
 
 /**
@@ -63,18 +60,18 @@ public class TrackerBot {
 
         //Bot in Process
         Scanner inputScanner = new Scanner(System.in);
-        boolean exitLoop = false;
+        boolean toExitLoop = false;
 
-        while (!exitLoop && inputScanner.hasNextLine()) {
+        while (!toExitLoop && inputScanner.hasNextLine()) {
             String userInput = inputScanner.nextLine();
-            exitLoop = botCompute(true, userInput);
+            toExitLoop = botCompute(true, userInput);
         }
     }
 
     public boolean botCompute(boolean isConsole, String userInput) {
             int inputLength = userInput.length();
 
-        Trio<Commands, Integer, TaskList> commandsIndexTaskTrio = null;
+        Trio<Commands, Integer, TaskList> commandsIndexTaskTrio;
         try {
             commandsIndexTaskTrio = Parser.parseUserInput(userInput, this.taskList);
         } catch (TrackerBotException e) {
@@ -94,31 +91,21 @@ public class TrackerBot {
             //Bot Replies
             switch (userCommand) {
             case BYE:
-                if (isConsole) {
-                    this.ui.sayBye();
-                } else {
-                    this.responseToGui = "Bye. Hope to see you again soon!";
-                }
+                this.executeBye(isConsole);
 
                 //console also returns true to exit loop
                 return true;
 
             case LIST:
+                executeList(isConsole);
+
                 //false for console to not exit loop
                 //true for gui to return string
-                if (isConsole) {
-                    this.taskList.printTaskList(0);
-                    return false;
-                } else {
-                    this.responseToGui = this.taskList.returnTaskList();
-                    return true;
-                }
+                return !isConsole;
 
             case MARK:
-                //set task to done
-                this.taskList.markTask(taskIndex);
                 try {
-                    this.f.writeToFile(null, this.taskList, false);
+                    this.executeMark(inputLength, taskIndex, taskTarget, isConsole);
                 } catch (IOException e) {
                     if (isConsole) {
                         String message = this.ui.printErrorMessage(Commands.MARK, inputLength, true);
@@ -129,25 +116,11 @@ public class TrackerBot {
                     //always true for errors
                     return true;
                 }
-
-                //print text
-                if (isConsole) {
-                    this.ui.printTask("mark", inputLength, 0, taskTarget, true);
-                    return false;
-                } else {
-                    this.responseToGui = this.ui.printTask("mark",
-                            inputLength,
-                            0,
-                            taskTarget,
-                            false);
-                    return true;
-                }
+                return !isConsole;
 
             case UNMARK:
-                //set task to undone
-                this.taskList.unmarkTask(taskIndex);
                 try {
-                    f.writeToFile(null, this.taskList, false);
+                    this.executeUnmark(inputLength, taskIndex, taskTarget, isConsole);
                 } catch (IOException e) {
                     if (isConsole) {
                         String message = this.ui.printErrorMessage(Commands.UNMARK, inputLength, true);
@@ -158,24 +131,11 @@ public class TrackerBot {
                     //always true for errors
                     return true;
                 }
-
-                //print text
-                if (isConsole) {
-                    this.ui.printTask("unmark", inputLength, 0, taskTarget, true);
-                    return false;
-                } else {
-                    this.responseToGui = this.ui.printTask("unmark",
-                            inputLength,
-                            0,
-                            taskTarget,
-                            false);
-                    return true;
-                }
+                return !isConsole;
 
             case DELETE:
-                this.taskList.removeTask(taskIndex);
                 try {
-                    f.writeToFile(null, this.taskList, false);
+                    this.executeDelete(inputLength, taskIndex, taskTarget, isConsole);
                 } catch (IOException e) {
                     if (isConsole) {
                         String message = this.ui.printErrorMessage(Commands.DELETE, inputLength, true);
@@ -186,29 +146,11 @@ public class TrackerBot {
                     //always true for errors
                     return true;
                 }
-
-                //print text
-                if (isConsole) {
-                    this.ui.printTask("delete", inputLength, 0, taskTarget, true);
-                    ConsoleDisplayStyle.printIndentation(inputLength);
-                    System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
-                    return false;
-                } else {
-                    this.responseToGui = this.ui.printTask("delete",
-                            inputLength,
-                            0,
-                            taskTarget,
-                            false);
-                    return true;
-                }
+                return !isConsole;
 
             case ADDTASK:
-                this.taskList.addTask(taskTarget);
-
-                //to write it into file
                 try {
-                    f.writeToFile(taskTarget, this.taskList, true);
+                    this.executeAddTask(inputLength, taskTarget, isConsole);
                 } catch (IOException e) {
                     if (isConsole) {
                         String message = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, true);
@@ -219,25 +161,10 @@ public class TrackerBot {
                     //always true for errors
                     return true;
                 }
-
-                //print text
-                if (isConsole) {
-                    this.ui.printTask("addTask", inputLength, 0, taskTarget, true);
-                    ConsoleDisplayStyle.printIndentation(inputLength);
-                    System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
-                    ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
-                    return false;
-                } else {
-                    this.responseToGui = this.ui.printTask("addTask",
-                            inputLength,
-                            0,
-                            taskTarget,
-                            false);
-                    return true;
-                }
+                return !isConsole;
 
             case FIND:
-                taskTargetList.printTaskList(0);
+                this.executeFind(taskTargetList);
                 break;
 
             case INVALID:
@@ -245,25 +172,8 @@ public class TrackerBot {
                 break;
 
             case DEFAULT:
-                String message = this.ui.printErrorMessage(Commands.DEFAULT, inputLength, true) + "\n";
-
-                //show possible commands
-                message += "Possible Commands: \n";
-                for (Commands c : Commands.values()) {
-                    if (c == Commands.ADDTASK || c == Commands.DEFAULT || c == Commands.INVALID) {
-                        continue;
-                    }
-                    message += c.toString() + "\n";
-                }
-
-                if (isConsole) {
-                    ConsoleDisplayStyle.printBasicStyling(0, message.length(), message);
-                    return false;
-
-                } else {
-                    this.responseToGui = message;
-                    return true;
-                }
+                this.executeDefault(inputLength, isConsole);
+                return !isConsole;
 
             default:
                 //added for style purposes
@@ -273,12 +183,117 @@ public class TrackerBot {
             return false; //does not exit loop
     }
 
-    public String getResponse(String input) {
-        return botCompute(false, input) ? this.responseToGui : "Cannot Get Results";
+    private void executeBye(boolean isConsole) {
+        if (isConsole) {
+            this.ui.sayBye();
+            this.responseToGui = "";
+        } else {
+            this.responseToGui = "Bye. Hope to see you again soon!";
+        }
     }
 
-    public void clearResponse() {
-        this.responseToGui = null;
+    private void executeList(boolean isConsole) {
+        if (isConsole) {
+            this.taskList.printTaskList(0);
+            this.responseToGui = "";
+        } else {
+            this.responseToGui = this.taskList.returnTaskList();
+        }
+    }
+
+    private void executeMark(int inputLength, int taskIndex, Task taskTarget, boolean isConsole) throws IOException {
+        this.taskList.markTask(taskIndex);
+        f.writeToFile(null, this.taskList, false);
+
+        if (isConsole) {
+            this.ui.printTask("mark", inputLength, 0, taskTarget, true);
+            this.responseToGui = "";
+        } else {
+            this.responseToGui = this.ui.printTask("mark",
+                    inputLength,
+                    0,
+                    taskTarget,
+                    false);
+        }
+    }
+
+    private void executeUnmark(int inputLength, int taskIndex, Task taskTarget, boolean isConsole) throws IOException {
+        this.taskList.unmarkTask(taskIndex);
+        f.writeToFile(null, this.taskList, false);
+
+        if (isConsole) {
+            this.ui.printTask("unmark", inputLength, 0, taskTarget, true);
+            this.responseToGui = "";
+        } else {
+            this.responseToGui = this.ui.printTask("unmark",
+                    inputLength,
+                    0,
+                    taskTarget,
+                    false);
+        }
+    }
+
+    private void executeDelete(int inputLength, int taskIndex, Task taskTarget, boolean isConsole) throws IOException {
+        this.taskList.removeTask(taskIndex);
+        f.writeToFile(null, this.taskList, false);
+
+        if (isConsole) {
+            this.ui.printTask("delete", inputLength, 0, taskTarget, true);
+            ConsoleDisplayStyle.printIndentation(inputLength);
+            System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
+            ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
+        } else {
+            this.responseToGui = this.ui.printTask("delete",
+                    inputLength,
+                    0,
+                    taskTarget,
+                    false);
+        }
+    }
+
+    private void executeAddTask(int inputLength, Task taskTarget, boolean isConsole) throws IOException {
+        this.taskList.addTask(taskTarget);
+        f.writeToFile(taskTarget, this.taskList, true);
+
+        if (isConsole) {
+            this.ui.printTask("addTask", inputLength, 0, taskTarget, true);
+            ConsoleDisplayStyle.printIndentation(inputLength);
+            System.out.printf("Now you have %d tasks in the list.%n", this.taskList.getSize());
+            ConsoleDisplayStyle.printHorizontalLine(inputLength, 0);
+        } else {
+            this.responseToGui = this.ui.printTask("addTask",
+                    inputLength,
+                    0,
+                    taskTarget,
+                    false);
+        }
+    }
+
+    private void executeFind(TaskList taskTargetList) {
+        taskTargetList.printTaskList(0);
+    }
+
+    private void executeDefault(int inputLength, boolean isConsole) {
+        String message = this.ui.printErrorMessage(Commands.DEFAULT, inputLength, true) + "\n";
+
+        //show possible commands
+        message += "Possible Commands: \n";
+        for (Commands c : Commands.values()) {
+            if (c == Commands.ADDTASK || c == Commands.DEFAULT || c == Commands.INVALID) {
+                continue;
+            }
+            message += c.toString() + "\n";
+        }
+
+        if (isConsole) {
+            ConsoleDisplayStyle.printBasicStyling(0, message.length(), message);
+        } else {
+            this.responseToGui = message;
+        }
+    }
+
+    public String getResponse(String input) {
+        return botCompute(false, input) ? this.responseToGui : "Cannot Get Results";
     }
 
     public static void main(String[] args) {
