@@ -36,6 +36,24 @@ public class Deadlines extends Task {
         }
     }
 
+    @Override
+    public int compareTo(Task t) {
+        int temp = -1;
+        if (t instanceof Deadlines) {
+            temp = this.deadline.compareTo(((Deadlines) t).deadline);
+        }
+        if (t instanceof Events) {
+            temp = this.deadline.compareTo(((Events) t).endDate);
+        }
+        if (temp == 0) {
+            return this.description.compareTo(t.description);
+        }
+        //else always in front
+        return temp;
+    }
+
+
+
     /**
      * {@inheritDoc}
      * String representation of deadline given by [D][isCompleted] TaskDescription (by: Deadline)

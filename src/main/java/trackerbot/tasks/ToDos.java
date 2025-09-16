@@ -12,10 +12,19 @@ public class ToDos extends Task {
         super(description);
     }
 
+    @Override
+    public int compareTo(Task t) {
+        if (t instanceof Deadlines || t instanceof Events) {
+            return 1;
+        }
+        return this.description.compareTo(t.description);
+    }
+
     /**
      * {@inheritDoc}
      */
     public String toString() {
         return String.format("[T][%s] %s", this.getStatusIcon(), this.description);
     }
+
 }

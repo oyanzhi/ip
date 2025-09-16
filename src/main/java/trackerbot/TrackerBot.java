@@ -38,7 +38,8 @@ public class TrackerBot {
         LIST,
         FIND,
         DEFAULT,
-        INVALID
+        INVALID,
+        SORT
     }
 
     /**
@@ -71,6 +72,12 @@ public class TrackerBot {
         }
     }
 
+    /**
+     * Handles the bot response to a user input
+     * @param isConsole boolean on whether is console or GUI
+     * @param userInput the user input as a string
+     * @return true if console && exitloop or gui to react / false otherwise
+     */
     public boolean botCompute(boolean isConsole, String userInput) {
         int inputLength = userInput.length();
 
@@ -94,99 +101,115 @@ public class TrackerBot {
         TaskList taskTargetList = commandsIndexTaskTrio.getTail();
         Task taskTarget = taskIndex != null ? taskTargetList.getTask(0) : null;
 
-            //Bot Replies
-            switch (userCommand) {
-            case BYE:
-                this.executeBye(isConsole);
+        //Bot Replies
+        switch (userCommand) {
+        case BYE:
+            this.executeBye(isConsole);
 
-                //console also returns true to exit loop
+            //console also returns true to exit loop
+            return true;
+
+        case LIST:
+            executeList(isConsole);
+
+            //false for console to not exit loop
+            //true for gui to return string
+            return !isConsole;
+
+        case MARK:
+            try {
+                this.executeMark(inputLength, taskIndex, taskTarget, isConsole);
+            } catch (IOException e) {
+                if (isConsole) {
+                    String message = this.ui.printErrorMessage(Commands.MARK, inputLength, true);
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                } else {
+                    this.responseToGui = this.ui.printErrorMessage(Commands.MARK, inputLength, false);
+                }
+                //always true for errors
                 return true;
-
-            case LIST:
-                executeList(isConsole);
-
-                //false for console to not exit loop
-                //true for gui to return string
-                return !isConsole;
-
-            case MARK:
-                try {
-                    this.executeMark(inputLength, taskIndex, taskTarget, isConsole);
-                } catch (IOException e) {
-                    if (isConsole) {
-                        String message = this.ui.printErrorMessage(Commands.MARK, inputLength, true);
-                        ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
-                    } else {
-                        this.responseToGui = this.ui.printErrorMessage(Commands.MARK, inputLength, false);
-                    }
-                    //always true for errors
-                    return true;
-                }
-                return !isConsole;
-
-            case UNMARK:
-                try {
-                    this.executeUnmark(inputLength, taskIndex, taskTarget, isConsole);
-                } catch (IOException e) {
-                    if (isConsole) {
-                        String message = this.ui.printErrorMessage(Commands.UNMARK, inputLength, true);
-                        ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
-                    } else {
-                        this.responseToGui = this.ui.printErrorMessage(Commands.UNMARK, inputLength, false);
-                    }
-                    //always true for errors
-                    return true;
-                }
-                return !isConsole;
-
-            case DELETE:
-                try {
-                    this.executeDelete(inputLength, taskIndex, taskTarget, isConsole);
-                } catch (IOException e) {
-                    if (isConsole) {
-                        String message = this.ui.printErrorMessage(Commands.DELETE, inputLength, true);
-                        ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
-                    } else {
-                        this.responseToGui = this.ui.printErrorMessage(Commands.DELETE, inputLength, false);
-                    }
-                    //always true for errors
-                    return true;
-                }
-                return !isConsole;
-
-            case ADDTASK:
-                try {
-                    this.executeAddTask(inputLength, taskTarget, isConsole);
-                } catch (IOException e) {
-                    if (isConsole) {
-                        String message = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, true);
-                        ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
-                    } else {
-                        this.responseToGui = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, false);
-                    }
-                    //always true for errors
-                    return true;
-                }
-                return !isConsole;
-
-            case FIND:
-                this.executeFind(taskTargetList);
-                break;
-
-            case INVALID:
-                //do nothing and wait for next line
-                break;
-
-            case DEFAULT:
-                this.executeDefault(inputLength, isConsole);
-                return !isConsole;
-
-            default:
-                //added for style purposes
-                break;
             }
+            return !isConsole;
 
-            return false; //does not exit loop
+        case UNMARK:
+            try {
+                this.executeUnmark(inputLength, taskIndex, taskTarget, isConsole);
+            } catch (IOException e) {
+                if (isConsole) {
+                    String message = this.ui.printErrorMessage(Commands.UNMARK, inputLength, true);
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                } else {
+                    this.responseToGui = this.ui.printErrorMessage(Commands.UNMARK, inputLength, false);
+                }
+                //always true for errors
+                return true;
+            }
+            return !isConsole;
+
+        case DELETE:
+            try {
+                this.executeDelete(inputLength, taskIndex, taskTarget, isConsole);
+            } catch (IOException e) {
+                if (isConsole) {
+                    String message = this.ui.printErrorMessage(Commands.DELETE, inputLength, true);
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                } else {
+                    this.responseToGui = this.ui.printErrorMessage(Commands.DELETE, inputLength, false);
+                }
+                //always true for errors
+                return true;
+            }
+            return !isConsole;
+
+        case ADDTASK:
+            try {
+                this.executeAddTask(inputLength, taskTarget, isConsole);
+            } catch (IOException e) {
+                if (isConsole) {
+                    String message = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, true);
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                } else {
+                    this.responseToGui = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, false);
+                }
+                //always true for errors
+                return true;
+            }
+            return !isConsole;
+
+        case FIND:
+            this.executeFind(isConsole, taskTargetList);
+            return !isConsole;
+
+        case INVALID:
+            //do nothing and wait for next line
+            return isConsole;
+
+        case SORT:
+            try {
+                this.executeSort();
+            } catch (IOException e) {
+                if (isConsole) {
+                    String message = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, true);
+                    ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                } else {
+                    this.responseToGui = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, false);
+                }
+                //always true for errors
+                return true;
+            }
+            this.executeList(isConsole);
+            return !isConsole;
+
+        case DEFAULT:
+            this.executeDefault(inputLength, isConsole);
+            return !isConsole;
+
+        default:
+            //added for style purposes
+            break;
+        }
+
+        return false; //does not exit loop
     }
 
     private void executeBye(boolean isConsole) {
@@ -275,8 +298,17 @@ public class TrackerBot {
         }
     }
 
-    private void executeFind(TaskList taskTargetList) {
-        taskTargetList.printTaskList(0);
+    private void executeFind(boolean isConsole, TaskList taskTargetList) {
+        if (isConsole) {
+            taskTargetList.printTaskList(0);
+        } else {
+            this.responseToGui = taskTargetList.returnTaskList();
+        }
+    }
+
+    private void executeSort() throws IOException {
+        this.taskList.sortTaskList();
+        f.writeToFile(null, this.taskList, false);
     }
 
     private void executeDefault(int inputLength, boolean isConsole) {

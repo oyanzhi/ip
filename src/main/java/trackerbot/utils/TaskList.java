@@ -1,6 +1,7 @@
 package trackerbot.utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import trackerbot.tasks.Task;
 import trackerbot.ui.ConsoleDisplayStyle;
@@ -112,6 +113,9 @@ public class TaskList {
         }
     }
 
+    /**
+     * Returns the task list as a string representation
+     */
     public String returnTaskList() {
         if (taskList.isEmpty()) {
             return "Empty List!";
@@ -125,5 +129,24 @@ public class TaskList {
         }
     }
 
+    /**
+     * Sorts the task list via a custom comparator
+     */
+    public void sortTaskList() {
+        if (taskList.isEmpty()) {
+            return;
+        }
+        this.taskList.sort(new TaskComparator());
+    }
+
+    /**
+     * A custom comparator class to sort the different tasks
+     */
+    public static class TaskComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task t1, Task t2) {
+            return t1.compareTo(t2);
+        }
+    }
 
 }
