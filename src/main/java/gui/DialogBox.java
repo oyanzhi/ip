@@ -46,11 +46,14 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getUserDialog(String s, Image i) {
-        return new DialogBox(s, i);
+        DialogBox db = new DialogBox(s, i);
+        db.getStyleClass().add("user-dialog");
+        return db;
     }
 
     public static DialogBox getBotDialog(String s, Image i) {
         DialogBox db = new DialogBox(s, i);
+        db.getStyleClass().add("bot-dialog");
         db.flip();
         return db;
     }
