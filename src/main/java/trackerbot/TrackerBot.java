@@ -38,7 +38,6 @@ public class TrackerBot {
         LIST,
         FIND,
         DEFAULT,
-        INVALID,
         SORT
     }
 
@@ -118,6 +117,7 @@ public class TrackerBot {
 
         case MARK:
             try {
+                assert taskIndex != null : "task index not supposed be null for mark";
                 this.executeMark(inputLength, taskIndex, taskTarget, isConsole);
             } catch (IOException e) {
                 if (isConsole) {
@@ -133,6 +133,7 @@ public class TrackerBot {
 
         case UNMARK:
             try {
+                assert taskIndex != null : "task index not supposed be null for unmark";
                 this.executeUnmark(inputLength, taskIndex, taskTarget, isConsole);
             } catch (IOException e) {
                 if (isConsole) {
@@ -148,6 +149,7 @@ public class TrackerBot {
 
         case DELETE:
             try {
+                assert taskIndex != null : "task index not supposed be null for delete";
                 this.executeDelete(inputLength, taskIndex, taskTarget, isConsole);
             } catch (IOException e) {
                 if (isConsole) {
@@ -179,10 +181,6 @@ public class TrackerBot {
         case FIND:
             this.executeFind(isConsole, taskTargetList);
             return !isConsole;
-
-        case INVALID:
-            //do nothing and wait for next line
-            return isConsole;
 
         case SORT:
             try {
@@ -317,7 +315,7 @@ public class TrackerBot {
         //show possible commands
         message += "Possible Commands: \n";
         for (Commands c : Commands.values()) {
-            if (c == Commands.ADDTASK || c == Commands.DEFAULT || c == Commands.INVALID) {
+            if (c == Commands.ADDTASK || c == Commands.DEFAULT) {
                 continue;
             }
             message += c.toString() + "\n";

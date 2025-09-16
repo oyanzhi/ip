@@ -31,20 +31,12 @@ public class ParserTest {
 
     @Test
     public void parseInvalidDeadlineTask() {
-        Trio<TrackerBot.Commands, Integer, TaskList> expected = new Trio<>(TrackerBot.Commands.INVALID,
-                null,
-                null);
-        Trio<TrackerBot.Commands, Integer, TaskList> actual = null;
         try {
-            actual = Parser.parseUserInput(
-                    "deadline testfail" ,
-                    new TaskList());
+            Parser.parseUserInput("deadline testfail", new TaskList());
         } catch (TrackerBotException e) {
-            fail();
+            assert(e.getMessage().equals("Missing Arguments! Example usage 'deadline tasking /by date'"));
         }
-        assertEquals(actual.getHead(), expected.getHead());
-        assertEquals(actual.getBody(), expected.getBody());
-        assertEquals(actual.getTail(), expected.getTail());
+
     }
 
 }
