@@ -43,6 +43,10 @@ public abstract class Parser {
             return new Trio<>(TrackerBot.Commands.FIND, null, tList);
         }
 
+        if (userInput.startsWith("sort")) {
+            return new Trio<>(TrackerBot.Commands.SORT, null, null);
+        }
+
         //to parse input of mark
         if (userInput.startsWith("mark")) {
             try {
@@ -123,7 +127,7 @@ public abstract class Parser {
             }
 
             //-1 to account for space between description and /by
-            String taskDescription = userInput.substring("deadline".length() + 1, deadlineIndex - 1);
+            String taskDescription = userInput.substring("deadline ".length(), deadlineIndex - 1);
             String deadline = userInput.substring(deadlineIndex + "/by ".length());
 
             Task taskTarget = new Deadlines(taskDescription, deadline);
@@ -144,7 +148,7 @@ public abstract class Parser {
             }
 
             //-1 to account for space between description and /from
-            String taskDescription = userInput.substring("event".length() + 1, startDateIndex - 1);
+            String taskDescription = userInput.substring("event ".length(), startDateIndex - 1);
 
             // -1 for proper spacing between /from [start] /to [end]
             String startDate = userInput.substring(startDateIndex + "/from ".length(), endDateIndex - 1);

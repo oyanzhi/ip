@@ -37,6 +37,22 @@ public class Events extends Task {
         }
     }
 
+    @Override
+    public int compareTo(Task t) {
+        int temp = -1;
+        if (t instanceof Deadlines) {
+            temp = this.endDate.compareTo(((Deadlines) t).deadline);
+        }
+        if (t instanceof Events) {
+            temp = this.endDate.compareTo(((Events) t).endDate);
+        }
+        if (temp == 0) {
+            return this.description.compareTo(t.description);
+        }
+        //else always in front
+        return temp;
+    }
+
     /**
      * {@inheritDoc}
      * A string representation of the event given by [E][isCompleted] Description (from: start date to: end date)

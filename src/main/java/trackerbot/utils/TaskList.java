@@ -1,6 +1,8 @@
 package trackerbot.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import trackerbot.tasks.Task;
 import trackerbot.ui.ConsoleDisplayStyle;
@@ -124,6 +126,21 @@ public class TaskList {
             return message;
         }
     }
+
+    public void sortTaskList() {
+        if (taskList.isEmpty()) {
+            return;
+        }
+        this.taskList.sort(new TaskComparator());
+    }
+
+    public static class TaskComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task t1, Task t2) {
+            return t1.compareTo(t2);
+        }
+    }
+
 
 
 }

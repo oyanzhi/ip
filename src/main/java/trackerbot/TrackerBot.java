@@ -38,7 +38,8 @@ public class TrackerBot {
         LIST,
         FIND,
         DEFAULT,
-        INVALID
+        INVALID,
+        SORT
     }
 
     /**
@@ -170,12 +171,28 @@ public class TrackerBot {
                 return !isConsole;
 
             case FIND:
-                this.executeFind(taskTargetList);
-                break;
+                this.executeFind(isConsole, taskTargetList);
+                return !isConsole;
 
             case INVALID:
                 //do nothing and wait for next line
-                break;
+                return isConsole;
+
+            case SORT:
+                try {
+                    this.executeSort();
+                } catch (IOException e) {
+                    if (isConsole) {
+                        String message = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, true);
+                        ConsoleDisplayStyle.printBasicStyling(inputLength, message.length(), message);
+                    } else {
+                        this.responseToGui = this.ui.printErrorMessage(Commands.ADDTASK, inputLength, false);
+                    }
+                    //always true for errors
+                    return true;
+                }
+                this.executeList(isConsole);
+                return !isConsole;
 
             case DEFAULT:
                 this.executeDefault(inputLength, isConsole);
@@ -275,8 +292,17 @@ public class TrackerBot {
         }
     }
 
-    private void executeFind(TaskList taskTargetList) {
-        taskTargetList.printTaskList(0);
+    private void executeFind(boolean isConsole, TaskList taskTargetList) {
+        if (isConsole) {
+            taskTargetList.printTaskList(0);
+        } else {
+            this.responseToGui = taskTargetList.returnTaskList();
+        }
+    }
+
+    private void executeSort() throws IOException {
+        this.taskList.sortTaskList();
+        f.writeToFile(null, this.taskList, false);
     }
 
     private void executeDefault(int inputLength, boolean isConsole) {
