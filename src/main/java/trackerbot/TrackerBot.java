@@ -52,6 +52,11 @@ public class TrackerBot {
             this.responseToGui = null;
         } catch (TrackerBotException | FileNotFoundException e) {
             ConsoleDisplayStyle.printBasicStyling(0, 0, e.getMessage());
+
+            //added for CI purposes
+            this.ui = new UI();
+            this.taskList = new TaskList();
+            this.responseToGui = null;
         }
     }
 
