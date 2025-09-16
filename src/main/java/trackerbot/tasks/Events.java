@@ -32,6 +32,9 @@ public class Events extends Task {
                     .toFormatter();
             this.startDate = LocalDateTime.parse(startDate, format);
             this.endDate = LocalDateTime.parse(endDate, format);
+            if (this.startDate.isAfter(this.endDate)) {
+                throw new TrackerBotException("Start Date after End Date. Please Check the Dates.");
+            }
         } catch (DateTimeException e) {
             throw new TrackerBotException("Invalid Date-Time. Please Use YYYY-MM-DD HHMM or MMM DD YYYY HHmm");
         }

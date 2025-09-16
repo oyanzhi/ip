@@ -23,6 +23,7 @@ public abstract class Parser {
 
         int taskIndex = -1;
         TaskList tList = new TaskList();
+        userInput = userInput.trim();
 
         //to parse utility inputs
         if (userInput.startsWith("list")) {
