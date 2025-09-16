@@ -48,7 +48,7 @@ public abstract class Task {
     }
 
     public abstract int compareTo(Task t);
-;
+
     /**
      * {@inheritDoc}
      * @return A string representation of the task in the form [ ][isCompleted] Task Description

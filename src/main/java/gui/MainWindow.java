@@ -9,6 +9,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import trackerbot.TrackerBot;
 
+/**
+ * A class to display the GUI main window
+ */
 public class MainWindow extends AnchorPane {
     @FXML
     private ScrollPane scrollPane;
@@ -36,6 +39,9 @@ public class MainWindow extends AnchorPane {
         this.trackerBot = bot;
     }
 
+    /**
+     * Handles user and bot responses
+     */
     @FXML
     public void handleUserInput() {
         String input = userInput.getText();

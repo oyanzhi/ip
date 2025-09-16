@@ -3,8 +3,6 @@ package trackerbot.ui;
 import trackerbot.TrackerBot;
 import trackerbot.tasks.Task;
 
-import java.io.Console;
-
 /**
  * A class to maintain most of the interactions of the bot in the console
  */
@@ -63,6 +61,10 @@ public class UI {
 
             case "addTask":
                 message = String.format("OK! I've added this task! \n %s", taskTarget);
+                break;
+
+            default:
+                //added for style purposes
                 break;
             }
             return message;

@@ -6,7 +6,6 @@ import trackerbot.tasks.Deadlines;
 import trackerbot.tasks.Events;
 import trackerbot.tasks.Task;
 import trackerbot.tasks.ToDos;
-import trackerbot.ui.ConsoleDisplayStyle;
 
 /**
  * A static class that contains all the utility methods for parsing user input

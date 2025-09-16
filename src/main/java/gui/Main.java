@@ -1,5 +1,7 @@
 package gui;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -7,8 +9,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import trackerbot.TrackerBot;
 
-import java.io.IOException;
-
+/**
+ * A class for the main GUI
+ */
 public class Main extends Application {
 
     private TrackerBot trackerbot = new TrackerBot();
