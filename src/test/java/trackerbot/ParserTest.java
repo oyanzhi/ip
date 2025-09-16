@@ -1,15 +1,20 @@
 package trackerbot;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import trackerbot.exceptions.TrackerBotException;
 import trackerbot.tasks.Task;
 import trackerbot.tasks.ToDos;
 import trackerbot.utils.Parser;
 import trackerbot.utils.TaskList;
 import trackerbot.utils.Trio;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ParserTest {
 
