@@ -1,0 +1,27 @@
+/* style.css */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.dialog-box {
+    -fx-background-radius: 15;
+    -fx-padding: 10 15 10 15;
+    -fx-spacing: 10;
+    -fx-wrap-text: true;
+}
+
+.user-dialog {
+    -fx-background-color: #DCF8C6; /* light green bubble */
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.bot-dialog {
+    -fx-background-color: #FFFFFF; /* white bubble */
+    -fx-alignment: CENTER_LEFT;
+}
+
+.dialog-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
