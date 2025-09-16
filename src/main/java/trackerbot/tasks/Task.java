@@ -47,6 +47,8 @@ public abstract class Task {
         return this.description.contains(toSearchDescription);
     }
 
+    public abstract int compareTo(Task t);
+
     /**
      * {@inheritDoc}
      * @return A string representation of the task in the form [ ][isCompleted] Task Description
