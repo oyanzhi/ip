@@ -19,13 +19,14 @@ Prerequisites: JDK 17, update Intellij to the most recent version.
    In the same dialog, set the **Project language level** field to the `SDK default` option.
 1. After that, locate the `src/main/java/trackerbot/TrackerBot.java` file, right-click it, and choose `Run .main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
    ```
-   Hello from
-    ________                  ___                     _______        ___
-   |___  ___|                 | |                    |  __  /        | |
-      |  |____  ______________| | _____ _____ ______ |  ___/ ________| |___
-      |  |  ___\  []  | _____|| |/   _| |  _ \|   __\|     \ |    |__   __|
-      |  |  |  |  __  | |_____| |  _/   |  __/|  |   |  __  \| || |  |  |
-      |__|__|  |__||__|______||_|_| |_\ |____||__|   |______/|____|  |__|
+   --------------------------------------------------
+   Hello! I'm TrackerBot
+   What can I do for you?
+   
+   --------------------------------------------------
    ```
+5. Or for the GUI version of the bot - Run either
+   1. the gradle project
+   2. `src/main/java/gui/Launcher.java` 
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
